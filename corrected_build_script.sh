@@ -6,9 +6,9 @@
 set -e
 
 # --- Configuration ---
-KERNEL_DIR="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820"
-OUT_DIR="/home/joshua/Desktop/android_kernel_d1/build_output"
-TOOLCHAIN_DIR="/home/joshua/proton-clang"
+KERNEL_DIR="/workspace/samsung-exynos9820"
+OUT_DIR="/workspace/build_output"
+TOOLCHAIN_DIR="/opt/proton-clang"
 PREBUILT_DTC_PATH="/usr/local/bin/dtc"
 
 # Kernel configuration
@@ -21,12 +21,12 @@ KERNELSU_REPO_URL="https://github.com/tiann/KernelSU.git"
 KERNELSU_SOURCE_SUBDIR="kernelsu_src"
 
 # AnyKernel3 configuration
-ANYKERNEL_DIR="/home/joshua/Desktop/android_kernel_d1/AnyKernel3"
+ANYKERNEL_DIR="/workspace/AnyKernel3"
 ANYKERNEL_URL="https://github.com/osm0sis/AnyKernel3.git"
 AK3_ZIP_NAME="KernelSU_Note10Plus_$(date +%Y%m%d-%H%M).zip"
 
 # Stock boot image for repacking
-STOCK_BOOT_IMG="/home/joshua/Desktop/android_kernel_d1/stock_boot.img"
+STOCK_BOOT_IMG="/workspace/stock_boot.img"
 FINAL_BOOT_IMG="$OUT_DIR/boot.img"
 FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
 
@@ -49,17 +49,20 @@ if [ ! -d "$KERNEL_DIR" ]; then
 fi
 
 # Check if toolchain exists or use system GCC
-USE_PROTON_CLANG=false
-# Temporarily disable proton-clang due to system compatibility issues
-# if [ -d "$TOOLCHAIN_DIR" ]; then
-#     # Check if the proton-clang is compatible with the system
-#     if "$TOOLCHAIN_DIR/bin/clang" --version &>/dev/null; then
-#         USE_PROTON_CLANG=true
-#         info "Using proton-clang toolchain"
-#     else
-#         info "Proton-clang appears incompatible with this system, falling back to GCC"
-#     fi
-# fi
+USE_PROTON_CLANG=true
+if [ -d "$TOOLCHAIN_DIR" ]; then
+    # Check if the proton-clang is compatible with the system
+    if "$TOOLCHAIN_DIR/bin/clang" --version &>/dev/null; then
+        USE_PROTON_CLANG=true
+        info "Using proton-clang toolchain"
+    else
+        info "Proton-clang appears incompatible with this system, falling back to GCC"
+        USE_PROTON_CLANG=false
+    fi
+else
+    info "Proton-clang not found at $TOOLCHAIN_DIR, falling back to GCC"
+    USE_PROTON_CLANG=false
+fi
 
 if [ "$USE_PROTON_CLANG" = false ]; then
     # Check for system GCC cross-compiler
@@ -492,12 +495,12 @@ echo "----------------------------------------------------"
 echo "Remember to backup your device before flashing!"
 
 # Robust prepend of __visible_for_testing macro for DEFEX sources using absolute paths
-DEFEX_COMMON_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/core/defex_common.c"
-DEFEX_LSM_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/core/defex_lsm.c"
-DEFEX_MAIN_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/core/defex_main.c"
-DEFEX_CACHES_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/catch_engine/defex_caches.c"
-DEFEX_SIGN_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/cert/defex_sign.c"
-DEFEX_RULES_PROC_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/core/defex_rules_proc.c"
+DEFEX_COMMON_C_ABS_PATH="/workspace/samsung-exynos9820/security/samsung/defex_lsm/core/defex_common.c"
+DEFEX_LSM_C_ABS_PATH="/workspace/samsung-exynos9820/security/samsung/defex_lsm/core/defex_lsm.c"
+DEFEX_MAIN_C_ABS_PATH="/workspace/samsung-exynos9820/security/samsung/defex_lsm/core/defex_main.c"
+DEFEX_CACHES_C_ABS_PATH="/workspace/samsung-exynos9820/security/samsung/defex_lsm/catch_engine/defex_caches.c"
+DEFEX_SIGN_C_ABS_PATH="/workspace/samsung-exynos9820/security/samsung/defex_lsm/cert/defex_sign.c"
+DEFEX_RULES_PROC_C_ABS_PATH="/workspace/samsung-exynos9820/security/samsung/defex_lsm/core/defex_rules_proc.c"
 MACRO_DEFINITION="#ifndef __visible_for_testing\n#define __visible_for_testing static\n#endif"
 
 for DEFEX_FILE in "$DEFEX_COMMON_C_ABS_PATH" "$DEFEX_LSM_C_ABS_PATH" "$DEFEX_MAIN_C_ABS_PATH" "$DEFEX_CACHES_C_ABS_PATH" "$DEFEX_SIGN_C_ABS_PATH" "$DEFEX_RULES_PROC_C_ABS_PATH"; do

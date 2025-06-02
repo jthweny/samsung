@@ -5,9 +5,12 @@
 # Exit on any error
 set -e
 
+# Get the current workspace directory
+WORKSPACE_DIR="$(pwd)"
+
 # --- Configuration ---
-KERNEL_DIR="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820"
-OUT_DIR="/home/joshua/Desktop/android_kernel_d1/build_output"
+KERNEL_DIR="$WORKSPACE_DIR/samsung-exynos9820"
+OUT_DIR="$WORKSPACE_DIR/build_output"
 TOOLCHAIN_DIR="/home/joshua/proton-clang"
 PREBUILT_DTC_PATH="/usr/local/bin/dtc"
 
@@ -21,12 +24,12 @@ KERNELSU_REPO_URL="https://github.com/tiann/KernelSU.git"
 KERNELSU_SOURCE_SUBDIR="kernelsu_src"
 
 # AnyKernel3 configuration
-ANYKERNEL_DIR="/home/joshua/Desktop/android_kernel_d1/AnyKernel3"
+ANYKERNEL_DIR="$WORKSPACE_DIR/AnyKernel3"
 ANYKERNEL_URL="https://github.com/osm0sis/AnyKernel3.git"
 AK3_ZIP_NAME="KernelSU_Note10Plus_$(date +%Y%m%d-%H%M).zip"
 
 # Stock boot image for repacking
-STOCK_BOOT_IMG="/home/joshua/Desktop/android_kernel_d1/stock_boot.img"
+STOCK_BOOT_IMG="$WORKSPACE_DIR/stock_boot.img"
 FINAL_BOOT_IMG="$OUT_DIR/boot.img"
 FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
 
@@ -283,6 +286,29 @@ if [ -f "$VISION_DEV_C_PATH" ]; then
     fi
 fi
 
+# Fix __visible_for_testing macro definitions in defex_lsm files
+info "Applying __visible_for_testing macro fixes..."
+DEFEX_COMMON_C_PATH="$KERNEL_DIR/security/samsung/defex_lsm/core/defex_common.c"
+DEFEX_LSM_C_PATH="$KERNEL_DIR/security/samsung/defex_lsm/core/defex_lsm.c"
+DEFEX_MAIN_C_PATH="$KERNEL_DIR/security/samsung/defex_lsm/core/defex_main.c"
+
+for DEFEX_FILE in "$DEFEX_COMMON_C_PATH" "$DEFEX_LSM_C_PATH" "$DEFEX_MAIN_C_PATH"; do
+    if [ -f "$DEFEX_FILE" ]; then
+        # Check if __visible_for_testing is used but not defined
+        if grep -q "__visible_for_testing" "$DEFEX_FILE" && ! grep -q "#define __visible_for_testing" "$DEFEX_FILE"; then
+            info "Adding __visible_for_testing definition to $(basename "$DEFEX_FILE")"
+            # Add the definition after the last include statement
+            LAST_INCLUDE_LINE=$(grep -n "#include" "$DEFEX_FILE" | tail -n 1 | cut -d: -f1)
+            if [ -n "$LAST_INCLUDE_LINE" ]; then
+                sed -i "${LAST_INCLUDE_LINE}a\\\\n#ifndef __visible_for_testing\\n#define __visible_for_testing static\\n#endif\\n" "$DEFEX_FILE"
+            else
+                # Fallback: add at the top of the file
+                sed -i '1i\\#ifndef __visible_for_testing\\n#define __visible_for_testing static\\n#endif\\n' "$DEFEX_FILE"
+            fi
+        fi
+    fi
+done
+
 # --- Configure KernelSU options ---
 info "Configuring base kernel options..."
 # TEMPORARILY DISABLED: KernelSU specific options
@@ -489,27 +515,4 @@ if [ -f "$FINAL_TAR_MD5" ]; then
     echo " Odin TAR: $FINAL_TAR_MD5"
 fi
 echo "----------------------------------------------------"
-echo "Remember to backup your device before flashing!"
-
-# Robust prepend of __visible_for_testing macro for DEFEX sources using absolute paths
-DEFEX_COMMON_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/core/defex_common.c"
-DEFEX_LSM_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/core/defex_lsm.c"
-DEFEX_MAIN_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/core/defex_main.c"
-DEFEX_CACHES_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/catch_engine/defex_caches.c"
-DEFEX_SIGN_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/cert/defex_sign.c"
-DEFEX_RULES_PROC_C_ABS_PATH="/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/core/defex_rules_proc.c"
-MACRO_DEFINITION="#ifndef __visible_for_testing\n#define __visible_for_testing static\n#endif"
-
-for DEFEX_FILE in "$DEFEX_COMMON_C_ABS_PATH" "$DEFEX_LSM_C_ABS_PATH" "$DEFEX_MAIN_C_ABS_PATH" "$DEFEX_CACHES_C_ABS_PATH" "$DEFEX_SIGN_C_ABS_PATH" "$DEFEX_RULES_PROC_C_ABS_PATH"; do
-    echo "INFO: Ensuring __visible_for_testing definition is prepended to $DEFEX_FILE"
-    if [ -f "$DEFEX_FILE" ]; then
-        if ! grep -Fxq "#define __visible_for_testing static" "$DEFEX_FILE"; then
-            echo -e "$MACRO_DEFINITION\n$(cat \"$DEFEX_FILE\")" > "$DEFEX_FILE.tmp" && mv "$DEFEX_FILE.tmp" "$DEFEX_FILE"
-            echo "INFO: Macro prepended to $DEFEX_FILE."
-        else
-            echo "INFO: __visible_for_testing static define already present in $DEFEX_FILE."
-        fi
-    else
-        echo "WARNING: $DEFEX_FILE not found. Cannot prepend macro."
-    fi
-done 
+echo "Remember to backup your device before flashing!" 

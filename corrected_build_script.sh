@@ -443,17 +443,13 @@ fi
 # Apply KernelSU kernel 4.14.x compatibility patches
 info "Applying KernelSU compatibility patches for kernel 4.14.x..."
 if [ -f "$KERNEL_DIR/drivers/kernelsu/ksu.c" ]; then
-    # Add MODULE_IMPORT_NS macro definition for kernel 4.14.x compatibility
-    if ! grep -q "#ifndef MODULE_IMPORT_NS" "$KERNEL_DIR/drivers/kernelsu/ksu.c"; then
-        info "Adding MODULE_IMPORT_NS compatibility macro for kernel 4.14.x"
-        sed -i '1i\
-#ifndef MODULE_IMPORT_NS\
-#define MODULE_IMPORT_NS(ns)\
-#endif\
-' "$KERNEL_DIR/drivers/kernelsu/ksu.c"
+    # Comment out MODULE_IMPORT_NS for kernel 4.14.x compatibility (not available in 4.14.x)
+    if grep -q "^MODULE_IMPORT_NS" "$KERNEL_DIR/drivers/kernelsu/ksu.c"; then
+        info "Commenting out MODULE_IMPORT_NS for kernel 4.14.x compatibility"
+        sed -i 's/^MODULE_IMPORT_NS/\/\/ MODULE_IMPORT_NS/' "$KERNEL_DIR/drivers/kernelsu/ksu.c"
         info "MODULE_IMPORT_NS compatibility patch applied"
     else
-        info "MODULE_IMPORT_NS compatibility patch already applied"
+        info "MODULE_IMPORT_NS already commented out or not present"
     fi
 else
     info "KernelSU ksu.c not found - skipping compatibility patch"

@@ -342,6 +342,7 @@ echo "# CONFIG_MALI_SEC_JOB_STATUS_CHECK is not set" >> "$OUT_DIR/.config"
 echo "# CONFIG_MALI_SUSTAINABLE_OPT is not set" >> "$OUT_DIR/.config"
 echo "# CONFIG_MALI_FTRACE_FREQ is not set" >> "$OUT_DIR/.config"
 echo "CONFIG_MALI_EXYNOS_SECURE_RENDERING_UNSUPPORTED=y" >> "$OUT_DIR/.config"
+echo "# CONFIG_MALI_KUTF is not set" >> "$OUT_DIR/.config"
 
 # Add dummy define for CONFIG_OPTION_REGION if not present in modem_main.c
 MODEM_MAIN_C_PATH="$KERNEL_DIR/drivers/misc/modem_v1/modem_main.c"

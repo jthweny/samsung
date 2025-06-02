@@ -292,6 +292,7 @@ info "Configuring base kernel options..."
 echo "CONFIG_OVERLAY_FS=y" >> "$OUT_DIR/.config"
 echo "CONFIG_MODULE_SIG=n" >> "$OUT_DIR/.config"
 echo "# CONFIG_OVERLAY_FS_REDIRECT_DIR is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_OVERLAY_FS_INDEX is not set" >> "$OUT_DIR/.config"
 
 # Disable problematic TCP congestion control modules
 echo "# CONFIG_TCP_CONG_WESTWOOD is not set" >> "$OUT_DIR/.config"

@@ -163,7 +163,117 @@ make_flags=(
 info "Cleaning previous builds..."
 make "${make_flags[@]}" clean
 
-# Update config
+# Configure kernel first before adding additional configs
+info "Configuring kernel with $DEFCONFIG..."
+make "${make_flags[@]}" "$DEFCONFIG"
+
+# --- Configure kernel options ---
+info "Configuring base kernel options..."
+# TEMPORARILY DISABLED: KernelSU specific options
+# echo "CONFIG_KPROBES=y" >> "$OUT_DIR/.config"
+# echo "CONFIG_HAVE_KPROBES=y" >> "$OUT_DIR/.config"
+# echo "CONFIG_KPROBE_EVENTS=y" >> "$OUT_DIR/.config"
+echo "CONFIG_OVERLAY_FS=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MODULE_SIG=n" >> "$OUT_DIR/.config"
+
+# Disable problematic TCP congestion control modules
+echo "# CONFIG_TCP_CONG_WESTWOOD is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_TCP_CONG_HTCP is not set" >> "$OUT_DIR/.config"
+
+# Ensure KernelSU is disabled
+echo "# CONFIG_KSU is not set" >> "$OUT_DIR/.config"
+
+# Configure Mali GPU driver for Exynos 9820 (Mali-G76 MP12)
+echo "CONFIG_MALI_DDK_VERSION=y" >> "$OUT_DIR/.config"
+echo "# CONFIG_MALI_BIFROST_R26P0 is not set" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_BIFROST_R32P1=y" >> "$OUT_DIR/.config"
+echo "# CONFIG_MALI_BIFROST_R19P0_Q is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_MALI_BIFROST_R16P0 is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_MALI_BIFROST_R14P0 is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_MALI_BIFROST_R12P0 is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_MALI_BIFROST_R10P0 is not set" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_MIDGARD=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXPERT=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_DVFS=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_DEBUG_SYS=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_DEBUG_KERNEL_SYSFS=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_REAL_HW=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_DMA_BUF_LEGACY_COMPAT=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_PLATFORM_NAME=\"exynos\"" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_CLOCK=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_DVFS=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_PM=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_RTPM=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_QOS=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_THERMAL=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_BTS_MO=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_DEBUG=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_DEVICETREE=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_CL_BOOST=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_PRFCNT_SET_PRIMARY=y" >> "$OUT_DIR/.config"
+
+echo "CONFIG_MALI_PLATFORM_THIRDPARTY=n" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_PLATFORM_THIRDPARTY_NAME=\"exynos\"" >> "$OUT_DIR/.config"
+
+echo "CONFIG_MALI_PRFCNT_SET_SECONDARY=n" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_PRFCNT_SET_SECONDARY_VIA_DEBUG_FS=n" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_RT_PM=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_EXYNOS_TRACE=n" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_SEC_CL_BOOST=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_PM_QOS=y" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_SEC_VK_BOOST=n" >> "$OUT_DIR/.config"
+echo "CONFIG_MALI_SEC_JOB_STATUS_CHECK=n" >> "$OUT_DIR/.config"
+
+# Disable problematic vision drivers that are missing header files
+echo "# CONFIG_VISION_SUPPORT is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_NPU is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_EXYNOS_CAMERA is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_FIMC_IS2 is not set" >> "$OUT_DIR/.config"
+
+# Disable DEFEX security module that has build issues
+echo "# CONFIG_SECURITY_DEFEX is not set" >> "$OUT_DIR/.config"
+
+# Disable sdcardfs that has undefined SDCARDFS_VERSION
+echo "# CONFIG_SDCARD_FS is not set" >> "$OUT_DIR/.config"
+
+# Disable problematic display drivers that have build issues
+echo "# CONFIG_EXYNOS_DPU20 is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_FB_EXYNOS_DPU20 is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_EXYNOS_MIPI_DSIM is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_PANEL_SAMSUNG_LCD is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_FB_SAMSUNG is not set" >> "$OUT_DIR/.config"
+
+# Add dummy define for CONFIG_OPTION_REGION if not present in modem_main.c
+MODEM_MAIN_C_PATH="$KERNEL_DIR/drivers/misc/modem_v1/modem_main.c"
+if [ -f "$MODEM_MAIN_C_PATH" ]; then
+    if ! grep -q "#define CONFIG_OPTION_REGION" "$MODEM_MAIN_C_PATH"; then
+        info "Adding dummy define for CONFIG_OPTION_REGION to $MODEM_MAIN_C_PATH"
+        # Add it after the last include, a bit crudely for now.
+        # A better way would be to find a suitable spot or use a dedicated patch file.
+        LAST_INCLUDE_LINE=$(grep -n "#include" "$MODEM_MAIN_C_PATH" | tail -n 1 | cut -d: -f1)
+        if [ -n "$LAST_INCLUDE_LINE" ]; then
+            sed -i "${LAST_INCLUDE_LINE}a\\#ifndef CONFIG_OPTION_REGION\\n#define CONFIG_OPTION_REGION \"DEFAULT_REGION\"\\n#endif" "$MODEM_MAIN_C_PATH"
+        else # Fallback if no includes found, add at top (less ideal)
+            sed -i '1i\\#ifndef CONFIG_OPTION_REGION\\n#define CONFIG_OPTION_REGION "DEFAULT_REGION"\\n#endif' "$MODEM_MAIN_C_PATH"
+        fi
+    fi
+fi
+
+# Add dummy define for CONFIG_OPTION_REGION if not present in link_device_memory_sbd.c
+LINK_DEV_MEM_SBD_C_PATH="$KERNEL_DIR/drivers/misc/modem_v1/link_device_memory_sbd.c"
+if [ -f "$LINK_DEV_MEM_SBD_C_PATH" ]; then
+    if ! grep -q "#define CONFIG_OPTION_REGION" "$LINK_DEV_MEM_SBD_C_PATH"; then
+        info "Adding dummy define for CONFIG_OPTION_REGION to $LINK_DEV_MEM_SBD_C_PATH"
+        LAST_INCLUDE_LINE=$(grep -n "#include" "$LINK_DEV_MEM_SBD_C_PATH" | tail -n 1 | cut -d: -f1)
+        if [ -n "$LAST_INCLUDE_LINE" ]; then
+            sed -i "${LAST_INCLUDE_LINE}a\\#ifndef CONFIG_OPTION_REGION\\n#define CONFIG_OPTION_REGION \"DEFAULT_REGION\"\\n#endif" "$LINK_DEV_MEM_SBD_C_PATH"
+        else # Fallback if no includes found, add at top (less ideal)
+            sed -i '1i\\#ifndef CONFIG_OPTION_REGION\\n#define CONFIG_OPTION_REGION "DEFAULT_REGION"\\n#endif' "$LINK_DEV_MEM_SBD_C_PATH"
+        fi
+    fi
+fi
+
+# Update config with defaults for any new options
 make "${make_flags[@]}" olddefconfig
 
 # Create dummy NPU firmware to satisfy build if it doesn't exist
@@ -198,10 +308,6 @@ if [ ! -f "$FIRMWARE_TSP_D1_BRINGUP_BIN" ]; then
     info "Creating dummy y771_d1_bringup.bin TSP firmware at $FIRMWARE_TSP_D1_BRINGUP_BIN"
     touch "$FIRMWARE_TSP_D1_BRINGUP_BIN"
 fi
-
-# --- Configure kernel ---
-info "Configuring kernel with $DEFCONFIG..."
-make "${make_flags[@]}" "$DEFCONFIG"
 
 # --- TEMPORARILY DISABLED: KernelSU Integration ---
 # info "Integrating KernelSU..."
@@ -253,26 +359,11 @@ CLASSMAP_PATH="$KERNEL_DIR/security/selinux/include/classmap.h"
 if [ -f "$CLASSMAP_PATH" ]; then
     info "Patching SELinux classmap.h..."
     
-    # Add stddef.h include for NULL
-    if ! grep -q "#include <stddef.h>" "$CLASSMAP_PATH"; then
-        sed -i '1i#include <stddef.h>' "$CLASSMAP_PATH"
-    fi
-    
     # Change flask.h include to local
     sed -i 's|#include <flask.h>|#include "flask.h"|g' "$CLASSMAP_PATH"
     
-    # Add missing socket classes if needed
-    if ! grep -q "netlink_smc_socket" "$CLASSMAP_PATH"; then
-        sed -i '/netlink_xfrm_socket/a\\tsel_avc_socket_compat(NETLINK_SMC, "netlink_smc_socket")' "$CLASSMAP_PATH"
-    fi
-    
-    # Update PF_MAX
-    sed -i 's/#define PF_MAX\s*[0-9]\+/#define PF_MAX 45/' "$CLASSMAP_PATH"
-    
-    # Add bpf capability if missing
-    if ! grep -q '"bpf",' "$CLASSMAP_PATH"; then
-        sed -i '/"audit_read",/a\\t\t"bpf",' "$CLASSMAP_PATH"
-    fi
+    # Update PF_MAX check to allow for more address families
+    sed -i 's/#if PF_MAX > 44/#if PF_MAX > 46/' "$CLASSMAP_PATH"
     
     info "SELinux classmap.h patched"
 fi
@@ -283,92 +374,6 @@ if [ -f "$VISION_DEV_C_PATH" ]; then
     if grep -q '#include "vision-config.h"' "$VISION_DEV_C_PATH"; then
         info "Patching include path in $VISION_DEV_C_PATH for vision-config.h"
         sed -i 's|#include "vision-config.h"|#include "../include/vision-config.h"|' "$VISION_DEV_C_PATH"
-    fi
-fi
-
-# --- Configure KernelSU options ---
-info "Configuring base kernel options..."
-# TEMPORARILY DISABLED: KernelSU specific options
-# echo "CONFIG_KPROBES=y" >> "$OUT_DIR/.config"
-# echo "CONFIG_HAVE_KPROBES=y" >> "$OUT_DIR/.config"
-# echo "CONFIG_KPROBE_EVENTS=y" >> "$OUT_DIR/.config"
-echo "CONFIG_OVERLAY_FS=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MODULE_SIG=n" >> "$OUT_DIR/.config"
-
-# Disable problematic TCP congestion control modules
-echo "# CONFIG_TCP_CONG_WESTWOOD is not set" >> "$OUT_DIR/.config"
-echo "# CONFIG_TCP_CONG_HTCP is not set" >> "$OUT_DIR/.config"
-
-# Ensure KernelSU is disabled
-echo "# CONFIG_KSU is not set" >> "$OUT_DIR/.config"
-
-# Configure Mali GPU driver for Exynos 9820 (Mali-G76 MP12)
-echo "CONFIG_MALI_DDK_VERSION=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_BIFROST_R26P0=y" >> "$OUT_DIR/.config"
-echo "# CONFIG_MALI_BIFROST_R32P1 is not set" >> "$OUT_DIR/.config"
-echo "# CONFIG_MALI_BIFROST_R19P0_Q is not set" >> "$OUT_DIR/.config"
-echo "# CONFIG_MALI_BIFROST_R16P0 is not set" >> "$OUT_DIR/.config"
-echo "# CONFIG_MALI_BIFROST_R14P0 is not set" >> "$OUT_DIR/.config"
-echo "# CONFIG_MALI_BIFROST_R12P0 is not set" >> "$OUT_DIR/.config"
-echo "# CONFIG_MALI_BIFROST_R10P0 is not set" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_MIDGARD=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXPERT=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_DVFS=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_DEBUG_SYS=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_DEBUG_KERNEL_SYSFS=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_REAL_HW=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_DMA_BUF_LEGACY_COMPAT=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_PLATFORM_NAME=\"exynos\"" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_CLOCK=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_DVFS=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_PM=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_RTPM=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_QOS=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_THERMAL=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_BTS_MO=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_DEBUG=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_DEVICETREE=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_CL_BOOST=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_PRFCNT_SET_PRIMARY=y" >> "$OUT_DIR/.config"
-
-echo "CONFIG_MALI_PLATFORM_THIRDPARTY=n" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_PLATFORM_THIRDPARTY_NAME=\"exynos\"" >> "$OUT_DIR/.config"
-
-echo "CONFIG_MALI_PRFCNT_SET_SECONDARY=n" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_PRFCNT_SET_SECONDARY_VIA_DEBUG_FS=n" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_RT_PM=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_EXYNOS_TRACE=n" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_SEC_CL_BOOST=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_PM_QOS=y" >> "$OUT_DIR/.config"
-echo "CONFIG_MALI_SEC_VK_BOOST=n" >> "$OUT_DIR/.config"
-
-# Add dummy define for CONFIG_OPTION_REGION if not present in modem_main.c
-MODEM_MAIN_C_PATH="$KERNEL_DIR/drivers/misc/modem_v1/modem_main.c"
-if [ -f "$MODEM_MAIN_C_PATH" ]; then
-    if ! grep -q "#define CONFIG_OPTION_REGION" "$MODEM_MAIN_C_PATH"; then
-        info "Adding dummy define for CONFIG_OPTION_REGION to $MODEM_MAIN_C_PATH"
-        # Add it after the last include, a bit crudely for now.
-        # A better way would be to find a suitable spot or use a dedicated patch file.
-        LAST_INCLUDE_LINE=$(grep -n "#include" "$MODEM_MAIN_C_PATH" | tail -n 1 | cut -d: -f1)
-        if [ -n "$LAST_INCLUDE_LINE" ]; then
-            sed -i "${LAST_INCLUDE_LINE}a\\#ifndef CONFIG_OPTION_REGION\\n#define CONFIG_OPTION_REGION \"DEFAULT_REGION\"\\n#endif" "$MODEM_MAIN_C_PATH"
-        else # Fallback if no includes found, add at top (less ideal)
-            sed -i '1i\\#ifndef CONFIG_OPTION_REGION\\n#define CONFIG_OPTION_REGION "DEFAULT_REGION"\\n#endif' "$MODEM_MAIN_C_PATH"
-        fi
-    fi
-fi
-
-# Add dummy define for CONFIG_OPTION_REGION if not present in link_device_memory_sbd.c
-LINK_DEV_MEM_SBD_C_PATH="$KERNEL_DIR/drivers/misc/modem_v1/link_device_memory_sbd.c"
-if [ -f "$LINK_DEV_MEM_SBD_C_PATH" ]; then
-    if ! grep -q "#define CONFIG_OPTION_REGION" "$LINK_DEV_MEM_SBD_C_PATH"; then
-        info "Adding dummy define for CONFIG_OPTION_REGION to $LINK_DEV_MEM_SBD_C_PATH"
-        LAST_INCLUDE_LINE=$(grep -n "#include" "$LINK_DEV_MEM_SBD_C_PATH" | tail -n 1 | cut -d: -f1)
-        if [ -n "$LAST_INCLUDE_LINE" ]; then
-            sed -i "${LAST_INCLUDE_LINE}a\\#ifndef CONFIG_OPTION_REGION\\n#define CONFIG_OPTION_REGION \"DEFAULT_REGION\"\\n#endif" "$LINK_DEV_MEM_SBD_C_PATH"
-        else # Fallback if no includes found, add at top (less ideal)
-            sed -i '1i\\#ifndef CONFIG_OPTION_REGION\\n#define CONFIG_OPTION_REGION "DEFAULT_REGION"\\n#endif' "$LINK_DEV_MEM_SBD_C_PATH"
-        fi
     fi
 fi
 

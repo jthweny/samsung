@@ -1,0 +1,14 @@
+#!/bin/bash
+if [[ "$*" == *"clone"* ]]; then
+  # Extract the destination directory from the command
+  for arg in "$@"; do
+    if [[ "$arg" != "clone" && "$arg" != "--depth=1" && "$arg" != "-b" && "$arg" != "master" && "$arg" != "mock_toolchain_url" ]]; then
+      # Create the directory to simulate successful clone
+      mkdir -p "$arg"
+      echo "Mocked git clone to $arg"
+      exit 0
+    fi
+  done
+fi
+echo "Git command executed: $*"
+exit 0

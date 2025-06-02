@@ -1,0 +1,120 @@
+[1;34m[INFO][0m Checking prerequisites...
+[1;34m[INFO][0m Using system GCC cross-compiler
+[1;34m[INFO][0m Cleaning previous builds...
+[1;34m[INFO][0m Setting up external DTC to avoid build conflicts...
+[1;34m[INFO][0m Patching SELinux classmap.h maximum check...
+[1;34m[INFO][0m Cleaning previous builds...
+make[1]: Entering directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+kperfmon_DUMMY="CONFIG_KPERFMON is off."
+kperfmon_DUMMY="perflog.h file is missing."
+cp: cannot stat '/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/../../system/core/liblog/include/log/perflog.h': No such file or directory
+kperfmon_DUMMY=""
+kperfmon_DUMMY=""
+-- KernelSU version: 12096
+-- KernelSU Manager signature size: 0x033b
+-- KernelSU Manager signature hash: c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/Makefile:14: [DEFEX] INTEGRITY_ENABLE
+make[1]: Leaving directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+[1;34m[INFO][0m Configuring kernel with exynos9820-d1_defconfig...
+make[1]: Entering directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+  GEN     ./Makefile
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/kconfig/conf.o
+  HOSTCC  scripts/kconfig/zconf.tab.o
+In file included from /home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/zconf.tab.c:2470:
+In function ‘dep_stack_insert’,
+    inlined from ‘sym_check_print_recursive’ at /home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1123:3,
+    inlined from ‘sym_check_deps’ at /home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1300:3:
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1099:19: warning: storing the address of local variable ‘cv_stack’ in ‘check_top’ [-Wdangling-pointer=]
+ 1099 |         check_top = stack;
+      |         ~~~~~~~~~~^~~~~~~
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c: In function ‘sym_check_deps’:
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1120:26: note: ‘cv_stack’ declared here
+ 1120 |         struct dep_stack cv_stack;
+      |                          ^~~~~~~~
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1090:4: note: ‘check_top’ declared here
+ 1090 | } *check_top;
+      |    ^~~~~~~~~
+  HOSTLD  scripts/kconfig/conf
+Kconfig:16:warning: environment variable ANDROID_MAJOR_VERSION undefined
+drivers/leds/Kconfig:734:warning: ignoring type redefinition of 'LEDS_KTD2692' from 'tristate' to 'boolean'
+drivers/samsung/misc/Kconfig:110:warning: leading whitespace ignored
+#
+# configuration written to .config
+#
+make[1]: Leaving directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+[1;34m[INFO][0m Integrating KernelSU...
+[1;34m[INFO][0m Updating KernelSU...
+From https://github.com/tiann/KernelSU
+ * branch              main       -> FETCH_HEAD
+HEAD is now at a2787860 build(deps): bump the maven group across 1 directory with 4 updates (#2612)
+[1;34m[INFO][0m Creating KernelSU symlink...
+[1;34m[INFO][0m Applying necessary patches...
+[1;34m[INFO][0m Patching SELinux classmap.h...
+[1;34m[INFO][0m SELinux classmap.h patched
+[1;34m[INFO][0m Configuring KernelSU options...
+make[1]: Entering directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+  GEN     ./Makefile
+scripts/kconfig/conf  --olddefconfig Kconfig
+Kconfig:16:warning: environment variable ANDROID_MAJOR_VERSION undefined
+drivers/leds/Kconfig:734:warning: ignoring type redefinition of 'LEDS_KTD2692' from 'tristate' to 'boolean'
+drivers/samsung/misc/Kconfig:110:warning: leading whitespace ignored
+.config:6482:warning: override: reassigning to symbol KPROBES
+.config:6483:warning: override: reassigning to symbol HAVE_KPROBES
+.config:6484:warning: override: reassigning to symbol KPROBE_EVENTS
+.config:6485:warning: override: reassigning to symbol OVERLAY_FS
+.config:6486:warning: override: reassigning to symbol MODULE_SIG
+.config:6487:warning: override: reassigning to symbol TCP_CONG_WESTWOOD
+.config:6488:warning: override: reassigning to symbol TCP_CONG_HTCP
+#
+# configuration written to .config
+#
+make[1]: Leaving directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+[1;34m[INFO][0m Building kernel with 20 jobs...
+make[1]: Entering directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+  GEN     ./Makefile
+scripts/kconfig/conf  --silentoldconfig Kconfig
+Kconfig:16:warning: environment variable ANDROID_MAJOR_VERSION undefined
+drivers/leds/Kconfig:734:warning: ignoring type redefinition of 'LEDS_KTD2692' from 'tristate' to 'boolean'
+drivers/samsung/misc/Kconfig:110:warning: leading whitespace ignored
+  CHK     include/config/kernel.release
+  GEN     ./Makefile
+  UPD     include/config/kernel.release
+  WRAP    arch/arm64/include/generated/uapi/asm/errno.h
+  WRAP    arch/arm64/include/generated/uapi/asm/ioctl.h
+  WRAP    arch/arm64/include/generated/uapi/asm/ioctls.h
+  WRAP    arch/arm64/include/generated/uapi/asm/ipcbuf.h
+  WRAP    arch/arm64/include/generated/uapi/asm/kvm_para.h
+  WRAP    arch/arm64/include/generated/uapi/asm/mman.h
+  WRAP    arch/arm64/include/generated/uapi/asm/sembuf.h
+  WRAP    arch/arm64/include/generated/uapi/asm/socket.h
+  WRAP    arch/arm64/include/generated/uapi/asm/types.h
+  WRAP    arch/arm64/include/generated/uapi/asm/msgbuf.h
+  WRAP    arch/arm64/include/generated/uapi/asm/termios.h
+  WRAP    arch/arm64/include/generated/uapi/asm/shmbuf.h
+  WRAP    arch/arm64/include/generated/uapi/asm/poll.h
+  WRAP    arch/arm64/include/generated/uapi/asm/sockios.h
+  WRAP    arch/arm64/include/generated/uapi/asm/resource.h
+  WRAP    arch/arm64/include/generated/uapi/asm/termbits.h
+  WRAP    arch/arm64/include/generated/uapi/asm/swab.h
+  CHK     include/generated/uapi/linux/version.h
+  UPD     include/generated/uapi/linux/version.h
+  CHK     include/generated/utsrelease.h
+  UPD     include/generated/utsrelease.h
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/basic/bin2c
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/Makefile:14: [DEFEX] INTEGRITY_ENABLE
+kperfmon_DUMMY="perflog.h file is missing."
+cp: cannot stat '/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/../../system/core/liblog/include/log/perflog.h': No such file or directory
+kperfmon_DUMMY=""
+kperfmon_DUMMY=""
+  Using /home/joshua/Desktop/android_kernel_d1/samsung-exynos9820 as source for kernel
+  /home/joshua/Desktop/android_kernel_d1/samsung-exynos9820 is not clean, please run 'make mrproper'
+  in the '/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820' directory.
+make[1]: *** [/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/Makefile:1185: prepare3] Error 1
+make[1]: *** Waiting for unfinished jobs....
+-- KernelSU version: 12096
+-- KernelSU Manager signature size: 0x033b
+-- KernelSU Manager signature hash: c371061b19d8c7d7d6133c6a9bafe198fa944e50c1b31c9d8daa8d7f1fc2d2d6
+make[1]: Leaving directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+make: *** [Makefile:146: sub-make] Error 2

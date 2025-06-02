@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "name": "android-kernel-builder",
+  "baseEnvironment": {
+    "type": "dockerfile",
+    "dockerfilePath": ".cursor/Dockerfile"
+  },
+  "github": {
+    "repository": "YOUR_GITHUB_REPOSITORY_URL_HERE",
+    "autoClone": true,
+    "autoCommit": false,
+    "autoPush": false
+  },
+  "onCreateCommand": [
+    "echo 'Running onCreateCommand...'",
+    "if [ -f /usr/bin/dtc ] && [ ! -f /usr/local/bin/dtc ]; then sudo ln -sf /usr/bin/dtc /usr/local/bin/dtc; fi",
+    "if [ -f .gitmodules ]; then git submodule update --init --recursive; fi",
+    "echo 'onCreateCommand finished.'"
+  ],
+  "install": [
+    {
+      "name": "Verify Environment",
+      "command": "echo 'Verifying environment...'; echo 'PATH is: $PATH'; clang --version; aarch64-linux-gnu-gcc --version; dtc --version; python3 --version"
+    }
+  ],
+  "start": [
+    {
+      "name": "Idle",
+      "command": "echo 'Android Kernel Build Agent Ready. Waiting for master prompt.'; sleep infinity"
+    }
+  ],
+  "terminals": [
+    {
+      "name": "Build Terminal",
+      "directory": ".",
+      "command": "bash"
+    }
+  ],
+  "env": {
+    "TOOLCHAIN_DIR": "/opt/proton-clang",
+    "PREBUILT_DTC_PATH": "/usr/local/bin/dtc",
+    "ARCH": "arm64",
+    "SUBARCH": "arm64",
+    "CROSS_COMPILE": "aarch64-linux-gnu-",
+    "CROSS_COMPILE_ARM32": "arm-linux-gnueabi-",
+    "CC": "clang",
+    "LD": "ld.lld",
+    "AR": "llvm-ar",
+    "NM": "llvm-nm",
+    "OBJCOPY": "llvm-objcopy",
+    "OBJDUMP": "llvm-objdump",
+    "STRIP": "llvm-strip",
+    "CLANG_TRIPLE": "aarch64-linux-gnu-",
+    "HOSTCC": "gcc",
+    "HOSTCXX": "g++"
+  }
+} 

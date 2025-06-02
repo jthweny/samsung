@@ -1,0 +1,39 @@
+# Build output directory
+out/
+*.o
+*.ko
+*.cmd
+*.mod.c
+*.symvers
+Module.symvers
+modules.order
+vmlinux
+System.map
+Image
+Image.gz
+Image.gz-dtb
+*.dtb
+*.dtbo
+dtbo.img
+boot.img
+boot.tar.md5
+*.zip
+
+# Temporary files
+*.tmp
+*~
+*.swp
+
+# Toolchains (if you accidentally put one inside the project dir)
+# proton-clang/
+# aarch64-linux-android-4.9/
+
+# Downloaded archives
+*.tar.gz
+*.tar.xz
+*.zip
+
+# IDE/Editor specific
+.vscode/
+.idea/
+*.DS_Store

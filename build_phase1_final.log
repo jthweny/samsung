@@ -1,0 +1,10 @@
+make[1]: Entering directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+  CHK     include/config/kernel.release
+  GEN     ./Makefile
+  CHK     include/generated/uapi/linux/version.h
+  Using /home/joshua/Desktop/android_kernel_d1/samsung-exynos9820 as source for kernel
+  /home/joshua/Desktop/android_kernel_d1/samsung-exynos9820 is not clean, please run 'make mrproper'
+  in the '/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820' directory.
+make[1]: *** [/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/Makefile:1185: prepare3] Error 1
+make[1]: Leaving directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+make: *** [Makefile:146: sub-make] Error 2

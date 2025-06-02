@@ -1,0 +1,168 @@
+[1;34m[INFO][0m Checking prerequisites...
+[1;34m[INFO][0m Using system GCC cross-compiler
+[1;34m[INFO][0m Cleaning previous builds...
+[1;34m[INFO][0m Setting up external DTC to avoid build conflicts...
+[1;34m[INFO][0m Patching SELinux classmap.h maximum check...
+[1;34m[INFO][0m Cleaning previous builds...
+make[1]: Entering directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+kperfmon_DUMMY="CONFIG_KPERFMON is off."
+kperfmon_DUMMY="perflog.h file is missing."
+cp: cannot stat '/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/../../system/core/liblog/include/log/perflog.h': No such file or directory
+kperfmon_DUMMY=""
+kperfmon_DUMMY=""
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/security/samsung/defex_lsm/Makefile:14: [DEFEX] INTEGRITY_ENABLE
+make[1]: Leaving directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+make[1]: Entering directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+  GEN     ./Makefile
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/kconfig/conf.o
+  SHIPPED scripts/kconfig/zconf.tab.c
+  SHIPPED scripts/kconfig/zconf.lex.c
+  HOSTCC  scripts/kconfig/zconf.tab.o
+In file included from scripts/kconfig/zconf.tab.c:2470:
+In function ‘dep_stack_insert’,
+    inlined from ‘sym_check_print_recursive’ at /home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1123:3,
+    inlined from ‘sym_check_deps’ at /home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1300:3:
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1099:19: warning: storing the address of local variable ‘cv_stack’ in ‘check_top’ [-Wdangling-pointer=]
+ 1099 |         check_top = stack;
+      |         ~~~~~~~~~~^~~~~~~
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c: In function ‘sym_check_deps’:
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1120:26: note: ‘cv_stack’ declared here
+ 1120 |         struct dep_stack cv_stack;
+      |                          ^~~~~~~~
+/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/symbol.c:1090:4: note: ‘check_top’ declared here
+ 1090 | } *check_top;
+      |    ^~~~~~~~~
+  HOSTLD  scripts/kconfig/conf
+scripts/kconfig/conf  --olddefconfig Kconfig
+Kconfig:16:warning: environment variable ANDROID_MAJOR_VERSION undefined
+drivers/leds/Kconfig:734:warning: ignoring type redefinition of 'LEDS_KTD2692' from 'tristate' to 'boolean'
+drivers/samsung/misc/Kconfig:110:warning: leading whitespace ignored
+/boot/config-6.8.0-60-generic:781:warning: symbol value 'm' invalid for KVM
+/boot/config-6.8.0-60-generic:1783:warning: symbol value 'm' invalid for NET_DSA_TAG_BRCM
+/boot/config-6.8.0-60-generic:1789:warning: symbol value 'm' invalid for NET_DSA_TAG_DSA
+/boot/config-6.8.0-60-generic:1790:warning: symbol value 'm' invalid for NET_DSA_TAG_EDSA
+/boot/config-6.8.0-60-generic:1791:warning: symbol value 'm' invalid for NET_DSA_TAG_MTK
+/boot/config-6.8.0-60-generic:1792:warning: symbol value 'm' invalid for NET_DSA_TAG_KSZ
+/boot/config-6.8.0-60-generic:1795:warning: symbol value 'm' invalid for NET_DSA_TAG_QCA
+/boot/config-6.8.0-60-generic:1799:warning: symbol value 'm' invalid for NET_DSA_TAG_LAN9303
+/boot/config-6.8.0-60-generic:1801:warning: symbol value 'm' invalid for NET_DSA_TAG_TRAILER
+/boot/config-6.8.0-60-generic:4406:warning: symbol value 'm' invalid for JOYSTICK_IFORCE_USB
+/boot/config-6.8.0-60-generic:4407:warning: symbol value 'm' invalid for JOYSTICK_IFORCE_232
+/boot/config-6.8.0-60-generic:4709:warning: symbol value 'm' invalid for SERIAL_LANTIQ
+/boot/config-6.8.0-60-generic:5032:warning: symbol value 'm' invalid for PINCTRL_MADERA
+/boot/config-6.8.0-60-generic:5091:warning: symbol value 'm' invalid for GPIO_MB86S7X
+/boot/config-6.8.0-60-generic:5145:warning: symbol value 'm' invalid for GPIO_MADERA
+/boot/config-6.8.0-60-generic:5152:warning: symbol value 'm' invalid for GPIO_TPS68470
+/boot/config-6.8.0-60-generic:5776:warning: symbol value 'm' invalid for MFD_MADERA
+/boot/config-6.8.0-60-generic:5777:warning: symbol value 'm' invalid for MFD_MADERA_I2C
+/boot/config-6.8.0-60-generic:5778:warning: symbol value 'm' invalid for MFD_MADERA_SPI
+/boot/config-6.8.0-60-generic:5871:warning: symbol value 'm' invalid for MFD_ARIZONA
+/boot/config-6.8.0-60-generic:6363:warning: symbol value 'm' invalid for RADIO_ADAPTERS
+/boot/config-6.8.0-60-generic:6379:warning: symbol value 'm' invalid for RADIO_SI470X
+/boot/config-6.8.0-60-generic:7320:warning: symbol value 'm' invalid for FB_BACKLIGHT
+/boot/config-6.8.0-60-generic:9762:warning: symbol value 'm' invalid for INTEL_PMC_CORE
+/boot/config-6.8.0-60-generic:10758:warning: symbol value 'm' invalid for MADERA_IRQ
+/boot/config-6.8.0-60-generic:10818:warning: symbol value 'm' invalid for ANDROID_BINDER_IPC
+/boot/config-6.8.0-60-generic:11162:warning: override: SQUASHFS_DECOMP_MULTI changes choice state
+/boot/config-6.8.0-60-generic:11163:warning: override: SQUASHFS_DECOMP_MULTI_PERCPU changes choice state
+#
+# using defaults found in /boot/config-6.8.0-60-generic
+#
+#
+# configuration written to .config
+#
+make[1]: Leaving directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+[1;34m[INFO][0m Configuring kernel with exynos9820-d1_defconfig...
+make[1]: Entering directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+  GEN     ./Makefile
+Kconfig:16:warning: environment variable ANDROID_MAJOR_VERSION undefined
+drivers/leds/Kconfig:734:warning: ignoring type redefinition of 'LEDS_KTD2692' from 'tristate' to 'boolean'
+drivers/samsung/misc/Kconfig:110:warning: leading whitespace ignored
+#
+# configuration written to .config
+#
+make[1]: Leaving directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+[1;34m[INFO][0m KernelSU integration temporarily disabled for base kernel build
+[1;34m[INFO][0m Applying necessary patches...
+[1;34m[INFO][0m Patching SELinux classmap.h...
+[1;34m[INFO][0m SELinux classmap.h patched
+[1;34m[INFO][0m Configuring base kernel options...
+[1;34m[INFO][0m Building kernel with 20 jobs...
+make[1]: Entering directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+  GEN     ./Makefile
+scripts/kconfig/conf  --silentoldconfig Kconfig
+Kconfig:16:warning: environment variable ANDROID_MAJOR_VERSION undefined
+drivers/leds/Kconfig:734:warning: ignoring type redefinition of 'LEDS_KTD2692' from 'tristate' to 'boolean'
+drivers/samsung/misc/Kconfig:110:warning: leading whitespace ignored
+.config:6478:warning: override: reassigning to symbol OVERLAY_FS
+.config:6479:warning: override: reassigning to symbol MODULE_SIG
+.config:6480:warning: override: reassigning to symbol TCP_CONG_WESTWOOD
+.config:6481:warning: override: reassigning to symbol TCP_CONG_HTCP
+.config:6483:warning: override: reassigning to symbol MALI_DDK_VERSION
+.config:6484:warning: override: reassigning to symbol MALI_BIFROST_R26P0
+.config:6484:warning: override: MALI_BIFROST_R26P0 changes choice state
+.config:6485:warning: override: reassigning to symbol MALI_BIFROST_R32P1
+.config:6486:warning: override: reassigning to symbol MALI_BIFROST_R19P0_Q
+.config:6487:warning: override: reassigning to symbol MALI_BIFROST_R16P0
+.config:6488:warning: override: reassigning to symbol MALI_BIFROST_R14P0
+.config:6489:warning: override: reassigning to symbol MALI_BIFROST_R12P0
+.config:6490:warning: override: reassigning to symbol MALI_BIFROST_R10P0
+.config:6491:warning: override: reassigning to symbol MALI_MIDGARD
+.config:6492:warning: override: reassigning to symbol MALI_EXPERT
+.config:6493:warning: override: reassigning to symbol MALI_DVFS
+.config:6494:warning: override: reassigning to symbol MALI_DEBUG_SYS
+.config:6495:warning: override: reassigning to symbol MALI_DEBUG_KERNEL_SYSFS
+.config:6496:warning: override: reassigning to symbol MALI_REAL_HW
+.config:6497:warning: override: reassigning to symbol MALI_DMA_BUF_LEGACY_COMPAT
+.config:6498:warning: override: reassigning to symbol MALI_PLATFORM_NAME
+.config:6499:warning: override: reassigning to symbol MALI_EXYNOS_CLOCK
+.config:6500:warning: override: reassigning to symbol MALI_EXYNOS_DVFS
+.config:6501:warning: override: reassigning to symbol MALI_EXYNOS_PM
+.config:6502:warning: override: reassigning to symbol MALI_EXYNOS_RTPM
+.config:6503:warning: override: reassigning to symbol MALI_EXYNOS_QOS
+.config:6504:warning: override: reassigning to symbol MALI_EXYNOS_THERMAL
+.config:6505:warning: override: reassigning to symbol MALI_EXYNOS_BTS_MO
+.config:6506:warning: override: reassigning to symbol MALI_EXYNOS_DEBUG
+.config:6507:warning: override: reassigning to symbol MALI_EXYNOS_DEVICETREE
+.config:6508:warning: override: reassigning to symbol MALI_EXYNOS_CL_BOOST
+.config:6509:warning: override: reassigning to symbol MALI_PRFCNT_SET_PRIMARY
+.config:6512:warning: override: reassigning to symbol MALI_PRFCNT_SET_SECONDARY
+*
+* Restart config...
+*
+*
+* ARM GPU Configuration
+*
+Third Party Platform (MALI_PLATFORM_THIRDPARTY) [N/y] n
+Platform name (MALI_PLATFORM_THIRDPARTY_NAME) [exynos] exynos
+Enable arbiter support for Mali (MALI_ARBITER_SUPPORT) [N/y/?] n
+Enable system event tracing support (MALI_SYSTEM_TRACE) [N/y/?] n
+Attempt to allocate 2MB pages (MALI_2MB_ALLOC) [N/y/?] n
+PWRSOFT-765 ticket (MALI_PWRSOFT_765) [N/y/?] n
+Memory fully physically-backed (MALI_MEMORY_FULLY_BACKED) [N/y/?] n
+Map imported dma-bufs on demand (MALI_DMA_BUF_MAP_ON_DEMAND) [N/y/?] n
+  Enable legacy compatibility cache flush on dma-buf map (MALI_DMA_BUF_LEGACY_COMPAT) [Y/n/?] y
+Disable workaround for BASE_HW_ISSUE_GPU2017_1336 (MALI_HW_ERRATA_1485982_NOT_AFFECTED) [N/y/?] n
+  Use alternative workaround for BASE_HW_ISSUE_GPU2017_1336 (MALI_HW_ERRATA_1485982_USE_CLOCK_ALTERNATIVE) [N/y/?] n
+Enable build of Mali kernel driver for GEM5 (MALI_GEM5_BUILD) [N/y/?] n
+Enable system level support needed for job dumping (MALI_JOB_DUMP) [N/y/?] n
+Use secondary set of performance counters (MALI_PRFCNT_SET_SECONDARY) [N/y/?] n
+  Use secondary set of performance counters (MALI_PRFCNT_SET_SECONDARY_VIA_DEBUG_FS) [N/y/?] n
+Third party soc name (EXYNOS_SOC_NAME) [9820] 9820
+Enable EXYNOS DVFS (MALI_DVFS) [Y/n/?] y
+Enable EXYNOS Runtime power management (MALI_RT_PM) [Y/n/?] y
+Enable EXYNOS kbase tracing (MALI_EXYNOS_TRACE) [N/y/?] n
+Enable sysfs for the Mali Midgard DDK  (MALI_DEBUG_SYS) [Y/n/?] y
+Enable EXYNOS cl booster (MALI_SEC_CL_BOOST) [Y/n/?] y
+Enable DVFS with QoS (MALI_PM_QOS) [Y/n/?] y
+Support Kernel Group Debug SysFS (MALI_DEBUG_KERNEL_SYSFS) [Y/n/?] y
+Enable GPU VK JOB PMQOS BOOST (MALI_SEC_VK_BOOST) [N/y/?] (NEW) aborted!
+
+Console input/output is redirected. Run 'make oldconfig' to update configuration.
+
+make[3]: *** [/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/scripts/kconfig/Makefile:40: silentoldconfig] Error 1
+make[2]: *** [/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/Makefile:554: silentoldconfig] Error 2
+make[1]: *** No rule to make target 'include/config/auto.conf', needed by 'include/config/kernel.release'.  Stop.
+make[1]: Leaving directory '/home/joshua/Desktop/android_kernel_d1/build_output'
+make: *** [Makefile:146: sub-make] Error 2

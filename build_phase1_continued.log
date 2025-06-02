@@ -1,0 +1,34 @@
+/bin/sh: 0: Illegal option -r
+  HOSTCC  scripts/basic/fixdep
+  HOSTCC  scripts/kconfig/conf.o
+  SHIPPED scripts/kconfig/zconf.tab.c
+  SHIPPED scripts/kconfig/zconf.lex.c
+  HOSTCC  scripts/kconfig/zconf.tab.o
+In file included from scripts/kconfig/zconf.tab.c:2470:
+In function ‘dep_stack_insert’,
+    inlined from ‘sym_check_print_recursive’ at scripts/kconfig/symbol.c:1123:3,
+    inlined from ‘sym_check_deps’ at scripts/kconfig/symbol.c:1300:3:
+scripts/kconfig/symbol.c:1099:19: warning: storing the address of local variable ‘cv_stack’ in ‘check_top’ [-Wdangling-pointer=]
+ 1099 |         check_top = stack;
+      |         ~~~~~~~~~~^~~~~~~
+scripts/kconfig/symbol.c: In function ‘sym_check_deps’:
+scripts/kconfig/symbol.c:1120:26: note: ‘cv_stack’ declared here
+ 1120 |         struct dep_stack cv_stack;
+      |                          ^~~~~~~~
+scripts/kconfig/symbol.c:1090:4: note: ‘check_top’ declared here
+ 1090 | } *check_top;
+      |    ^~~~~~~~~
+  HOSTLD  scripts/kconfig/conf
+scripts/kconfig/conf  --silentoldconfig Kconfig
+Kconfig:16:warning: environment variable ANDROID_MAJOR_VERSION undefined
+drivers/leds/Kconfig:734:warning: ignoring type redefinition of 'LEDS_KTD2692' from 'tristate' to 'boolean'
+drivers/samsung/misc/Kconfig:110:warning: leading whitespace ignored
+***
+*** Configuration file ".config" not found!
+***
+*** Please run some configurator (e.g. "make oldconfig" or
+*** "make menuconfig" or "make xconfig").
+***
+make[2]: *** [scripts/kconfig/Makefile:40: silentoldconfig] Error 1
+make[1]: *** [Makefile:554: silentoldconfig] Error 2
+make: *** No rule to make target 'include/config/auto.conf', needed by 'include/config/kernel.release'.  Stop.

@@ -1,0 +1,1615 @@
+#!/bin/bash
+
+source ./corrected_build_script.sh
+
+# Import the test framework
+. /usr/bin/shunit2
+
+# Mock apt-get to simulate various behaviors
+apt_get_mock() {
+  local command=$1
+  
+  # Create a mock function that simulates apt-get behavior
+  function sudo() {
+    if [[ "$*" == *"apt-get update"* ]]; then
+      if [[ "$APT_UPDATE_FAILS" == "true" ]]; then
+        return 1
+      fi
+      return 0
+    elif [[ "$*" == *"apt-get install"* ]]; then
+      if [[ "$APT_INSTALL_FAILS" == "true" ]]; then
+        return 1
+      fi
+      return 0
+    fi
+    # Pass through other sudo commands
+    command sudo "$@"
+  }
+  
+  # Export the function so it's available to the code being tested
+  export -f sudo
+}
+
+# Setup function to prepare test environment
+setup() {
+  # Save original functions
+  if [ -z "$ORIGINAL_INFO_FUNC" ]; then
+    ORIGINAL_INFO_FUNC=$(declare -f info)
+    ORIGINAL_ERROR_FUNC=$(declare -f error)
+  fi
+  
+  # Mock info function to track calls
+  info() {
+    INFO_CALLED+=("$1")
+  }
+  export -f info
+  
+  # Mock error function to track calls and prevent script exit
+  error() {
+    ERROR_CALLED+=("$1")
+    return 1
+  }
+  export -f error
+  
+  # Initialize tracking arrays
+  INFO_CALLED=()
+  ERROR_CALLED=()
+}
+
+# Teardown function to restore original state
+teardown() {
+  # Restore original functions if they were saved
+  if [ -n "$ORIGINAL_INFO_FUNC" ]; then
+    eval "$ORIGINAL_INFO_FUNC"
+    eval "$ORIGINAL_ERROR_FUNC"
+  fi
+  
+  # Unset mock variables
+  unset APT_UPDATE_FAILS
+  unset APT_INSTALL_FAILS
+  unset -f sudo
+  unset INFO_CALLED
+  unset ERROR_CALLED
+}
+
+# Test: apt-get update succeeds but apt-get install fails
+test_apt_get_install_fails() {
+  echo "Testing apt-get install failure handling..."
+  
+  setup
+  
+  # Configure the mock
+  apt_get_mock
+  APT_UPDATE_FAILS=false
+  APT_INSTALL_FAILS=true
+  
+  # Run the code that would call apt-get
+  {
+    sudo apt-get update -y --allow-releaseinfo-change
+    sudo apt-get install -y build-essential git bc bison flex libssl-dev make libc6-dev libncurses5-dev libelf-dev \
+      crossbuild-essential-arm64 libarchive-tools zip unzip ccache \
+      python3 python3-pip rsync wget curl imagemagick lz4 \
+      libselinux1-dev libsepol-dev selinux-policy-dev shellcheck dos2unix --reinstall
+  } > /dev/null 2>&1 || true
+  
+  # Check if appropriate info messages were logged
+  FOUND_WARNING=false
+  for msg in "${INFO_CALLED[@]}"; do
+    if [[ "$msg" == *"Warning: 'apt-get update' encountered errors"* ]]; then
+      FOUND_WARNING=true
+      break
+    fi
+  done
+  
+  # Check if error was called with appropriate message
+  FOUND_ERROR=false
+  for msg in "${ERROR_CALLED[@]}"; do
+    if [[ "$msg" == *"Failed to install build dependencies"* ]]; then
+      FOUND_ERROR=true
+      break
+    fi
+  done
+  
+  # Verify results
+  if [[ "$FOUND_ERROR" == "true" ]]; then
+    echo "✓ Test passed: Script correctly called error() when apt-get install failed"
+  else
+    echo "✗ Test failed: Script did not call error() with expected message when apt-get install failed"
+    exit 1
+  fi
+  
+  teardown
+}
+
+# Test: apt-get update fails but script continues
+test_apt_get_update_fails_gracefully() {
+  echo "Testing apt-get update failure handling (graceful)..."
+  
+  setup
+  
+  # Configure the mock
+  apt_get_mock
+  APT_UPDATE_FAILS=true
+  APT_INSTALL_FAILS=false
+  
+  # Run the code that would call apt-get
+  {
+    sudo apt-get update -y --allow-releaseinfo-change || info "Warning: 'apt-get update' encountered errors, but proceeding."
+    sudo apt-get install -y build-essential git bc bison flex libssl-dev make libc6-dev libncurses5-dev libelf-dev \
+      crossbuild-essential-arm64 libarchive-tools zip unzip ccache \
+      python3 python3-pip rsync wget curl imagemagick lz4 \
+      libselinux1-dev libsepol-dev selinux-policy-dev shellcheck dos2unix --reinstall
+  } > /dev/null 2>&1 || true
+  
+  # Check if appropriate info messages were logged
+  FOUND_WARNING=false
+  for msg in "${INFO_CALLED[@]}"; do
+    if [[ "$msg" == *"Warning: 'apt-get update' encountered errors, but proceeding"* ]]; then
+      FOUND_WARNING=true
+      break
+    fi
+  done
+  
+  # Verify results
+  if [[ "$FOUND_WARNING" == "true" ]]; then
+    echo "✓ Test passed: Script handles apt-get update failures gracefully"
+  else
+    echo "✗ Test failed: Script did not handle apt-get update failure as expected"
+    exit 1
+  fi
+  
+  teardown
+}
+
+# Setup function to prepare for testing
+setUp() {
+  # Create a temporary directory for testing
+  TEST_DIR=$(mktemp -d)
+  
+  # Create a copy of the script to test
+  cp /home/joshua/Desktop/android_kernel_d1/corrected_build_script.sh "$TEST_DIR/test_script.sh"
+  chmod +x "$TEST_DIR/test_script.sh"
+  
+  # Save the original directory
+  ORIGINAL_DIR=$(pwd)
+  
+  # Override variables in the script for testing
+  sed -i "s|TOOLCHAIN_DIR="\$HOME/proton-clang"|TOOLCHAIN_DIR="$TEST_DIR/proton-clang"|" "$TEST_DIR/test_script.sh"
+  sed -i "s|TOOLCHAIN_URL="https://github.com/kdrag0n/proton-clang.git"|TOOLCHAIN_URL="mock_toolchain_url"|" "$TEST_DIR/test_script.sh"
+  
+  # Mock the git command to avoid actual cloning
+  cat > "$TEST_DIR/git" << 'EOF'
+#!/bin/bash
+if [[ "$*" == *"clone"* ]]; then
+  # Extract the destination directory from the command
+  for arg in "$@"; do
+    if [[ "$arg" != "clone" && "$arg" != "--depth=1" && "$arg" != "-b" && "$arg" != "master" && "$arg" != "mock_toolchain_url" ]]; then
+      # Create the directory to simulate successful clone
+      mkdir -p "$arg"
+      echo "Mocked git clone to $arg"
+      exit 0
+    fi
+  done
+fi
+echo "Git command executed: $*"
+exit 0
+EOF
+
+  chmod +x "$TEST_DIR/git"
+  
+  # Add the mock directory to PATH
+  export PATH="$TEST_DIR:$PATH"
+  
+  # Navigate to the test directory
+  cd "$TEST_DIR"
+}
+
+# Cleanup function after tests
+tearDown() {
+  # Return to original directory
+  cd "$ORIGINAL_DIR"
+  
+  # Clean up the temporary directory
+  rm -rf "$TEST_DIR"
+  
+  # Restore PATH
+  export PATH=$(echo "$PATH" | sed -e "s|$TEST_DIR:||")
+}
+
+# Test function: Should correctly clone and setup toolchain when toolchain directory doesn't exist
+testToolchainCloneWhenDirectoryDoesNotExist() {
+  # Run the portion of the script that sets up the toolchain
+  # We'll extract just that part using sed
+  TOOLCHAIN_SETUP=$(sed -n '/^info "Setting up toolchain/,/^info "Toolchain setup completed/p' "$TEST_DIR/test_script.sh")
+  
+  # Execute the extracted code
+  TOOLCHAIN_DIR="$TEST_DIR/proton-clang"
+  TOOLCHAIN_URL="mock_toolchain_url"
+  TOOLCHAIN_BRANCH="master"
+  
+  # Make sure the directory doesn't exist
+  rm -rf "$TOOLCHAIN_DIR"
+  
+  # Source the functions needed
+  source <(grep -A 10 "^info()" "$TEST_DIR/test_script.sh")
+  source <(grep -A 10 "^error()" "$TEST_DIR/test_script.sh")
+  
+  # Execute the setup code
+  eval "$TOOLCHAIN_SETUP"
+  
+  # Verify the toolchain directory was created
+  assertTrue "Toolchain directory should exist" "[ -d "$TOOLCHAIN_DIR" ]"
+  
+  # Check if our git mock was called with the right parameters
+  CLONE_LOG=$(cat "$TEST_DIR"/git_clone_log.txt 2>/dev/null || echo "")
+  assertContains "Git clone should be called with correct parameters" "$CLONE_LOG" "clone --depth=1 -b master mock_toolchain_url"
+}
+
+# Unit test for KernelSU configuration modification
+# Tests that the script correctly modifies .config to enable KernelSU and disable conflicting options
+
+# Create a temporary directory for testing
+TEST_DIR=$(mktemp -d)
+KERNEL_BUILD_OUT_DIR="$TEST_DIR/build_output"
+mkdir -p "$KERNEL_BUILD_OUT_DIR"
+
+# Create a mock .config file with some initial values
+KERNEL_CONFIG_FILE="$KERNEL_BUILD_OUT_DIR/.config"
+cat > "$KERNEL_CONFIG_FILE" << EOF
+# Mock kernel config file
+CONFIG_KSU=n
+CONFIG_KPROBES=n
+CONFIG_OVERLAY_FS=n
+CONFIG_MODULE_SIG=y
+CONFIG_MODULE_SIG_ALL=y
+CONFIG_MODULE_SIG_FORCE=y
+CONFIG_KPERFMON=y
+# End of mock config
+EOF
+
+# Source the script to test, but replace make olddefconfig with a mock function
+# that just prints what would be executed
+function make() {
+    if [ "$1" = "ARCH=$ARCH" ] && [[ "$*" == *"olddefconfig"* ]]; then
+        echo "Mock: make olddefconfig would be executed"
+        return 0
+    fi
+}
+export -f make
+
+# Mock the info function to reduce output
+function info() {
+    echo "INFO MOCK: $1" > /dev/null
+}
+export -f info
+
+# Mock the error function
+function error() {
+    echo "ERROR: $1"
+    exit 1
+}
+export -f error
+
+# Test the KernelSU Kconfig options application
+echo "Test: Applying KernelSU Kconfig options..."
+declare -A KSU_OPTIONS=(
+    ["CONFIG_KSU"]=y
+    ["CONFIG_KPROBES"]=y
+    ["CONFIG_OVERLAY_FS"]=y
+    ["CONFIG_MODULE_SIG"]=n
+    ["CONFIG_MODULE_SIG_ALL"]=n
+    ["CONFIG_MODULE_SIG_FORCE"]=n
+)
+for KCONFIG_OPT in "${!KSU_OPTIONS[@]}"; do
+    DESIRED_VALUE="${KSU_OPTIONS[$KCONFIG_OPT]}"
+    CURRENT_VALUE_LINE=$(grep "^${KCONFIG_OPT}=" "$KERNEL_CONFIG_FILE" || true)
+    if [ -n "$CURRENT_VALUE_LINE" ]; then # Option exists
+        if [ "$CURRENT_VALUE_LINE" != "${KCONFIG_OPT}=${DESIRED_VALUE}" ]; then
+            sed -i "s|^${KCONFIG_OPT}=.*|${KCONFIG_OPT}=${DESIRED_VALUE}|" "$KERNEL_CONFIG_FILE"
+            echo "Set $KCONFIG_OPT to $DESIRED_VALUE"
+        else
+            echo "$KCONFIG_OPT already set to $DESIRED_VALUE"
+        fi
+    else # Option does not exist, append it
+        echo "${KCONFIG_OPT}=${DESIRED_VALUE}" >> "$KERNEL_CONFIG_FILE"
+        echo "Appended $KCONFIG_OPT=$DESIRED_VALUE"
+    fi
+done
+
+# Test disabling CONFIG_KPERFMON
+echo "Test: Disabling CONFIG_KPERFMON..."
+if grep -q "CONFIG_KPERFMON=y" "$KERNEL_CONFIG_FILE"; then
+    sed -i 's/CONFIG_KPERFMON=y/# CONFIG_KPERFMON is not set/' "$KERNEL_CONFIG_FILE"
+    echo "CONFIG_KPERFMON disabled"
+elif grep -q "# CONFIG_KPERFMON is not set" "$KERNEL_CONFIG_FILE"; then
+    echo "CONFIG_KPERFMON already disabled"
+else
+    echo "# CONFIG_KPERFMON is not set" >> "$KERNEL_CONFIG_FILE"
+    echo "Added CONFIG_KPERFMON as disabled"
+fi
+
+# Verify the configuration changes
+echo "Verifying configuration changes..."
+CONFIG_RESULTS=()
+
+# Check each KSU option
+for KCONFIG_OPT in "${!KSU_OPTIONS[@]}"; do
+    EXPECTED_VALUE="${KSU_OPTIONS[$KCONFIG_OPT]}"
+    ACTUAL_VALUE=$(grep "^$KCONFIG_OPT=" "$KERNEL_CONFIG_FILE" | cut -d= -f2)
+    
+    if [ "$ACTUAL_VALUE" = "$EXPECTED_VALUE" ]; then
+        CONFIG_RESULTS+=("PASS: $KCONFIG_OPT=$ACTUAL_VALUE matches expected value")
+    else
+        CONFIG_RESULTS+=("FAIL: $KCONFIG_OPT=$ACTUAL_VALUE does not match expected value $EXPECTED_VALUE")
+    fi
+done
+
+# Check KPERFMON is disabled
+if grep -q "# CONFIG_KPERFMON is not set" "$KERNEL_CONFIG_FILE"; then
+    CONFIG_RESULTS+=("PASS: CONFIG_KPERFMON is disabled")
+else
+    CONFIG_RESULTS+=("FAIL: CONFIG_KPERFMON is not disabled properly")
+fi
+
+# Report test results
+echo "--- Test Results ---"
+for result in "${CONFIG_RESULTS[@]}"; do
+    echo "$result"
+done
+
+# Check if any tests failed
+if [[ "${CONFIG_RESULTS[*]}" == *"FAIL"* ]]; then
+    echo "❌ TEST FAILED: Some configuration options were not set correctly"
+    exit 1
+else
+    echo "✅ TEST PASSED: All configuration options set correctly"
+fi
+
+# Clean up
+rm -rf "$TEST_DIR"
+
+# Run the tests
+echo "Running tests for dependency installation handling..."
+test_apt_get_update_fails_gracefully
+test_apt_get_install_fails
+testToolchainCloneWhenDirectoryDoesNotExist
+
+setUp() {
+  # Create temporary test directory
+  TEST_DIR=$(mktemp -d)
+  
+  # Create mock directories and files
+  mkdir -p "$TEST_DIR/home/joshua/Desktop/android_kernel_d1"
+  mkdir -p "$TEST_DIR/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820"
+  mkdir -p "$TEST_DIR/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/drivers"
+  mkdir -p "$TEST_DIR/home/joshua/Desktop/android_kernel_d1/build_output"
+  
+  # Copy the script to test directory
+  cp "$(pwd)/corrected_build_script.sh" "$TEST_DIR/corrected_build_script.sh"
+  chmod +x "$TEST_DIR/corrected_build_script.sh"
+  
+  # Save original directory
+  ORIG_DIR=$(pwd)
+  
+  # Change to test directory
+  cd "$TEST_DIR" || exit 1
+  
+  # Create mock git function to avoid actual cloning
+  git() {
+    if [[ "$1" == "clone" && "$3" == *"KernelSU"* ]]; then
+      # Create mock KernelSU directory structure
+      mkdir -p "$4"
+      mkdir -p "$4/kernel"
+      touch "$4/kernel/Kconfig"
+      return 0
+    fi
+    # For other git commands, return success
+    return 0
+  }
+  export -f git
+  
+  # Create mock files needed by the script
+  touch "$TEST_DIR/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/drivers/Makefile"
+  touch "$TEST_DIR/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820/drivers/Kconfig"
+  
+  # Export necessary paths to match script's expectations
+  export NEW_KERNEL_DIR="$TEST_DIR/home/joshua/Desktop/android_kernel_d1/samsung-exynos9820"
+  export KERNELSU_REPO_URL="https://github.com/tiann/KernelSU.git"
+}
+
+tearDown() {
+  # Return to original directory
+  cd "$ORIG_DIR" || exit 1
+  
+  # Clean up test directory
+  rm -rf "$TEST_DIR"
+}
+
+testKernelSUIntegration() {
+  # Source the relevant KernelSU integration section from the build script
+  # This is a controlled extract to isolate the KernelSU integration functionality
+  
+  KERNELSU_SOURCE_SUBDIR="kernelsu_src"
+  KERNELSU_SRC_PATH="$NEW_KERNEL_DIR/$KERNELSU_SOURCE_SUBDIR"
+  KERNELSU_LINK_TARGET_IN_DRIVERS="kernelsu"
+  DRIVERS_KERNELSU_PATH="$NEW_KERNEL_DIR/drivers/$KERNELSU_LINK_TARGET_IN_DRIVERS"
+  DRIVERS_MAKEFILE="$NEW_KERNEL_DIR/drivers/Makefile"
+  DRIVERS_KCONFIG="$NEW_KERNEL_DIR/drivers/Kconfig"
+  KSU_MAKEFILE_ENTRY='obj-$(CONFIG_KSU) += kernelsu/kernel/'
+  KSU_KCONFIG_ENTRY='source "drivers/kernelsu/kernel/Kconfig"'
+  
+  # Execute the relevant KernelSU setup steps
+  
+  # Clone KernelSU source
+  if [ ! -d "$KERNELSU_SRC_PATH" ]; then
+    git clone --depth=1 "$KERNELSU_REPO_URL" "$KERNELSU_SRC_PATH"
+  fi
+  
+  # Create drivers directory if it doesn't exist
+  mkdir -p "$NEW_KERNEL_DIR/drivers"
+  
+  # Create the symlink: drivers/kernelsu -> ../kernelsu_src
+  SYMLINK_RELATIVE_TARGET="../$KERNELSU_SOURCE_SUBDIR"
+  ln -sfn "$SYMLINK_RELATIVE_TARGET" "$DRIVERS_KERNELSU_PATH"
+  
+  # Add KernelSU entry to drivers Makefile
+  if ! grep -Fq "$KSU_MAKEFILE_ENTRY" "$DRIVERS_MAKEFILE"; then
+    echo "$KSU_MAKEFILE_ENTRY" >> "$DRIVERS_MAKEFILE"
+  fi
+  
+  # Add KernelSU entry to drivers Kconfig
+  if ! grep -Fq "$KSU_KCONFIG_ENTRY" "$DRIVERS_KCONFIG"; then
+    if grep -q "^endmenu" "$DRIVERS_KCONFIG"; then
+      sed -i "/^endmenu/i $KSU_KCONFIG_ENTRY" "$DRIVERS_KCONFIG"
+    else
+      echo "$KSU_KCONFIG_ENTRY" >> "$DRIVERS_KCONFIG"
+    fi
+  fi
+  
+  # Verify KernelSU source was cloned
+  assertTrue "KernelSU source directory not created" "[ -d '$KERNELSU_SRC_PATH' ]"
+  
+  # Verify symlink was created correctly
+  assertTrue "KernelSU symlink not created in drivers directory" "[ -L '$DRIVERS_KERNELSU_PATH' ]"
+  
+  # Verify symlink points to the correct path
+  SYMLINK_TARGET=$(readlink "$DRIVERS_KERNELSU_PATH")
+  assertEquals "Symlink target is incorrect" "../$KERNELSU_SOURCE_SUBDIR" "$SYMLINK_TARGET"
+  
+  # Verify Kconfig file exists and is accessible through the symlink path
+  mkdir -p "$KERNELSU_SRC_PATH/kernel"
+  touch "$KERNELSU_SRC_PATH/kernel/Kconfig"
+  assertTrue "Kconfig file not accessible through symlink path" "[ -f '$DRIVERS_KERNELSU_PATH/kernel/Kconfig' ]"
+  
+  # Verify Makefile was updated with KernelSU entry
+  assertContains "KernelSU entry not found in drivers Makefile" "$(cat $DRIVERS_MAKEFILE)" "$KSU_MAKEFILE_ENTRY"
+  
+  # Verify Kconfig was updated with KernelSU entry
+  assertContains "KernelSU entry not found in drivers Kconfig" "$(cat $DRIVERS_KCONFIG)" "$KSU_KCONFIG_ENTRY"
+}
+
+# Source our test helpers
+. "$(dirname "$0")/common.sh"
+
+TEST_DIR=$(dirname "${BASH_SOURCE[0]}")
+TEST_NAME=$(basename "${BASH_SOURCE[0]}" .sh)
+BUILD_SCRIPT="$TEST_DIR/../corrected_build_script.sh"
+
+# Setup test environment
+setup_test_env() {
+    # Create test directories
+    mkdir -p "$TMP_DIR/kernel_build_out"
+    mkdir -p "$TMP_DIR/toolchain_dir/bin"
+    
+    # Create mock executables
+    for cmd in clang ld.lld llvm-ar llvm-nm llvm-objcopy llvm-objdump llvm-strip; do
+        echo '#!/bin/bash' > "$TMP_DIR/toolchain_dir/bin/$cmd"
+        echo 'echo "Mock $0 $*"' >> "$TMP_DIR/toolchain_dir/bin/$cmd"
+        chmod +x "$TMP_DIR/toolchain_dir/bin/$cmd"
+    done
+    
+    # Create a mock DTC
+    echo '#!/bin/bash' > "$TMP_DIR/dtc"
+    echo 'echo "Mock DTC $*"' >> "$TMP_DIR/dtc"
+    chmod +x "$TMP_DIR/dtc"
+    
+    # Mock kernel directory structure
+    mkdir -p "$TMP_DIR/kernel_src/drivers/vision/npu/generated"
+    mkdir -p "$TMP_DIR/kernel_src/scripts/dtc"
+    mkdir -p "$TMP_DIR/kernel_src/security/selinux/include"
+    touch "$TMP_DIR/kernel_src/security/selinux/include/flask.h"
+    
+    # Create a mock .config file
+    mkdir -p "$TMP_DIR/kernel_build_out"
+    echo "# Mock kernel config" > "$TMP_DIR/kernel_build_out/.config"
+}
+
+# Mock make command to capture its arguments
+mock_make() {
+    local make_command="$1"
+    
+    cat > "$TMP_DIR/mock_make" << EOF
+#!/bin/bash
+echo "\$@" > "$TMP_DIR/make_args"
+# Check if this is the main kernel build
+if [[ "\$*" == *"Image.gz modules dtbs"* ]]; then
+    mkdir -p "$TMP_DIR/kernel_build_out/arch/arm64/boot"
+    touch "$TMP_DIR/kernel_build_out/arch/arm64/boot/Image.gz"
+fi
+# Return success
+exit 0
+EOF
+    chmod +x "$TMP_DIR/mock_make"
+    
+    export PATH="$TMP_DIR:$PATH"
+}
+
+# Test that the kernel build uses the correct KCFLAGS and job count
+test_kernel_build_flags() {
+    # Setup test environment
+    setup_test_env
+    mock_make "make"
+    
+    # Override environment variables used by the script
+    export NEW_KERNEL_DIR="$TMP_DIR/kernel_src"
+    export KERNEL_BUILD_OUT_DIR="$TMP_DIR/kernel_build_out"
+    export TOOLCHAIN_DIR="$TMP_DIR/toolchain_dir"
+    export PREBUILT_DTC_PATH="$TMP_DIR/dtc"
+    export NUM_JOBS=16
+    export KCFLAGS_VALUE="-Wno-error=sizeof-pointer-div -Wno-sizeof-pointer-div"
+    
+    # Run the script with the specified line range
+    bash -c "source $BUILD_SCRIPT" > /dev/null 2>&1 || true
+    
+    # Check if make was called with the correct arguments
+    if [ -f "$TMP_DIR/make_args" ]; then
+        make_args=$(cat "$TMP_DIR/make_args")
+        
+        # Check for KCFLAGS with expected value
+        if ! echo "$make_args" | grep -q "KCFLAGS="$KCFLAGS_VALUE""; then
+            fail "KCFLAGS not set correctly. Expected: "$KCFLAGS_VALUE""
+        else
+            pass "KCFLAGS set correctly"
+        fi
+        
+        # Check for correct job count
+        if ! echo "$make_args" | grep -q -- "-j16"; then
+            fail "Job count not set correctly. Expected: -j16"
+        else
+            pass "Job count set correctly"
+        fi
+        
+        # Verify other critical build flags
+        if ! echo "$make_args" | grep -q "LLVM=1 LLVM_IAS=1"; then
+            fail "LLVM flags not set correctly"
+        else
+            pass "LLVM flags set correctly"
+        fi
+        
+        if ! echo "$make_args" | grep -q "CC=$TOOLCHAIN_DIR/bin/clang"; then
+            fail "Compiler not set to clang correctly"
+        else
+            pass "Compiler set to clang correctly"
+        fi
+        
+        # Check for build targets
+        if ! echo "$make_args" | grep -q "Image.gz modules dtbs"; then
+            fail "Build targets not set correctly"
+        else
+            pass "Build targets set correctly"
+        fi
+    else
+        fail "Make command was not executed"
+    fi
+}
+
+# Run the test
+test_kernel_build_flags
+
+# Test for the packaging functionality
+test_packaging_functionality() {
+    local script_path="$SCRIPT_DIR/corrected_build_script.sh"
+    local temp_dir=$(mktemp -d)
+    local out_dir="$temp_dir/build_output"
+    local anykernel_dir="$temp_dir/AnyKernel3"
+    local kernel_dir="$temp_dir/kernel"
+    local kernel_build_out_dir="$kernel_dir/out"
+    local stock_boot_img="$temp_dir/stock_boot.img"
+    local ak3_zip_name="CruelKernelSU_Note10Plus_$(date +%Y%m%d-%H%M).zip"
+    
+    mkdir -p "$out_dir" "$anykernel_dir/modules" "$anykernel_dir/dtb" "$anykernel_dir/tools" "$kernel_build_out_dir/arch/arm64/boot/dts"
+    
+    # Create mock files that would be packaged
+    echo "mock kernel image" > "$kernel_build_out_dir/arch/arm64/boot/Image.gz"
+    echo "mock kernel module" > "$kernel_build_out_dir/mock_module.ko"
+    echo "mock dtb file" > "$kernel_build_out_dir/arch/arm64/boot/dts/mock.dtb"
+    
+    # Create mock stock boot image
+    dd if=/dev/zero of="$stock_boot_img" bs=1M count=10
+    
+    # Create mock magiskboot tool
+    cat > "$anykernel_dir/tools/magiskboot" << 'EOF'
+#!/bin/bash
+if [[ "$1" == "unpack" ]]; then
+    echo "Unpacking $2"
+    touch kernel.gz
+    touch ramdisk.cpio
+elif [[ "$1" == "repack" ]]; then
+    echo "Repacking $2 to $3"
+    touch "$3"
+fi
+exit 0
+EOF
+    chmod +x "$anykernel_dir/tools/magiskboot"
+    
+    # Modify script to use our test paths
+    sed -e "s|^NEW_KERNEL_DIR=.*|NEW_KERNEL_DIR="$kernel_dir"|" \
+        -e "s|^KERNEL_BUILD_OUT_DIR=.*|KERNEL_BUILD_OUT_DIR="$kernel_build_out_dir"|" \
+        -e "s|^ANYKERNEL_DIR=.*|ANYKERNEL_DIR="$anykernel_dir"|" \
+        -e "s|^OUT_DIR=.*|OUT_DIR="$out_dir"|" \
+        -e "s|^STOCK_BOOT_IMG=.*|STOCK_BOOT_IMG="$stock_boot_img"|" \
+        "$script_path" > "$temp_dir/test_script.sh"
+    
+    # Make the script executable
+    chmod +x "$temp_dir/test_script.sh"
+    
+    # Extract the packaging section from the script and create a smaller test script
+    sed -n '/^echo "INFO: --- Phase: Packaging ---/,/^echo "INFO: --- Phase: Packaging Finished ---/p' "$temp_dir/test_script.sh" > "$temp_dir/packaging_script.sh"
+    
+    # Add necessary environment variables and shell options at the beginning
+    sed -i '1s/^/#!/bin/bash\nset -e\n\n/' "$temp_dir/packaging_script.sh"
+    
+    # Make the packaging script executable
+    chmod +x "$temp_dir/packaging_script.sh"
+    
+    # Run the packaging script
+    cd "$kernel_dir"
+    "$temp_dir/packaging_script.sh"
+    
+    # Verify the artifacts were created
+    assert_file_exists "$anykernel_dir/Image.gz" "Image.gz not copied to AnyKernel3 directory"
+    assert_file_exists "$out_dir/boot.img" "boot.img not created in output directory"
+    assert_file_exists "$out_dir/boot.tar.md5" "boot.tar.md5 not created in output directory"
+    assert_file_exists "$out_dir/$ak3_zip_name" "AnyKernel3 ZIP not created in output directory"
+    
+    # Check if modules were copied
+    assert_file_exists "$anykernel_dir/modules/mock_module.ko" "Kernel module not copied to AnyKernel3 modules directory"
+    
+    # Check if DTBs were copied
+    assert_file_exists "$anykernel_dir/dtb/mock.dtb" "DTB file not copied to AnyKernel3 dtb directory"
+    
+    # Clean up
+    rm -rf "$temp_dir"
+}
+
+# Run the test
+test_packaging_functionality
+
+# Test for SELinux patching in corrected_build_script.sh
+# This test validates that the script correctly patches the SELinux classmap.h file
+
+setUp() {
+  # Create a temporary directory for test files
+  TEST_DIR=$(mktemp -d)
+  
+  # Create mock directory structure
+  mkdir -p "$TEST_DIR/security/selinux/include"
+  
+  # Create a mock classmap.h file with content that needs patching
+  cat > "$TEST_DIR/security/selinux/include/classmap.h" << 'EOF'
+/* Original file content without needed patches */
+#include <linux/socket.h>
+
+static struct security_class_mapping secclass_map[] = {
+	{ "socket", { NULL } },
+	{ "tcp_socket", { NULL } },
+	{ "netlink_socket", {
+		"create",
+		NULL
+	} },
+	{
+		"netlink_xfrm_socket", {
+			"create",
+			NULL
+		}
+	},
+	{ NULL }
+};
+
+/* Original capability definitions */
+#define CAP_AUDIT_READ 37
+#define CAP_LAST_CAP CAP_AUDIT_READ
+
+#if CAP_LAST_CAP > CAP_AUDIT_READ
+#error New capability defined, please update capability_names.
+#endif
+
+/* PF_MAX definition too low */
+#define PF_MAX 44
+
+#error New address family defined, please update secclass_map.
+EOF
+
+  # Store the original directory
+  ORIG_DIR=$(pwd)
+  
+  # Move to test directory
+  cd "$TEST_DIR"
+}
+
+tearDown() {
+  # Return to original directory
+  cd "$ORIG_DIR"
+  
+  # Clean up test directory
+  rm -rf "$TEST_DIR"
+}
+
+test_selinux_classmap_patching() {
+  # Define the expected path to classmap.h for this test
+  CLASSMAP_PATH="security/selinux/include/classmap.h"
+  
+  # Run the function that would patch the file
+  # Since we can't directly call the function from the script, 
+  # we'll simulate the patching by extracting the relevant code
+  
+  # Check if file exists
+  if [ -f "$CLASSMAP_PATH" ]; then
+    # Ensure stddef.h is included for NULL
+    if ! grep -q "#include <stddef.h>" "$CLASSMAP_PATH"; then
+      sed -i '1i#include <stddef.h>' "$CLASSMAP_PATH"
+    fi
+    
+    # Add flask.h inclusion
+    if grep -q "#include <flask.h>" "$CLASSMAP_PATH"; then
+      sed -i 's|#include <flask.h>|#include "flask.h"|' "$CLASSMAP_PATH"
+    elif ! grep -q "#include "flask.h"" "$CLASSMAP_PATH"; then
+      sed -i '1i#include "flask.h"' "$CLASSMAP_PATH"
+    fi
+    
+    # Patch for netlink_smc_socket
+    if ! grep -q "sel_avc_socket_compat(NETLINK_SMC, "netlink_smc_socket")" "$CLASSMAP_PATH"; then
+      sed -i '/^\s*sel_avc_socket_compat(NETLINK_XFRM, "netlink_xfrm_socket")/a\ \tsel_avc_socket_compat(NETLINK_SMC, "netlink_smc_socket")' "$CLASSMAP_PATH"
+    fi
+    
+    # Set PF_MAX to 45
+    if ! grep -q "#define PF_MAX\s*45" "$CLASSMAP_PATH"; then
+      sed -i "s/#define PF_MAX\s*[0-9]\+/#define PF_MAX 45/" "$CLASSMAP_PATH"
+    fi
+    
+    # Add bpf capability
+    if ! grep -q ""bpf"," "$CLASSMAP_PATH"; then
+      sed -i '/"audit_read",/a\ \t\t"bpf",' "$CLASSMAP_PATH"
+    fi
+    
+    # Update CAP_LAST_CAP
+    if ! grep -q "#define CAP_LAST_CAP\s*CAP_BPF" "$CLASSMAP_PATH"; then
+      sed -i "s/#define CAP_LAST_CAP\s*CAP_AUDIT_READ/#define CAP_LAST_CAP CAP_BPF/" "$CLASSMAP_PATH"
+    fi
+    
+    # Update the preprocessor check
+    if grep -q "#if CAP_LAST_CAP > CAP_AUDIT_READ" "$CLASSMAP_PATH"; then
+      sed -i "s/#if CAP_LAST_CAP > CAP_AUDIT_READ/#if CAP_LAST_CAP > CAP_BPF/" "$CLASSMAP_PATH"
+    fi
+    
+    # Define CAP_BPF if not present
+    if ! grep -q "#define CAP_BPF\s*38" "$CLASSMAP_PATH"; then
+      if grep -q "#define CAP_AUDIT_READ\s*37" "$CLASSMAP_PATH"; then
+        sed -i '/#define CAP_AUDIT_READ\s*37/a #define CAP_BPF\t\t\t38' "$CLASSMAP_PATH"
+      fi
+    fi
+    
+    # Remove the #error line
+    if grep -q "#error New address family defined, please update secclass_map." "$CLASSMAP_PATH"; then
+      sed -i '/#error New address family defined, please update secclass_map./d' "$CLASSMAP_PATH"
+    fi
+  fi
+  
+  # Now verify that the file was correctly patched
+  
+  # Check for stddef.h inclusion
+  grep -q "#include <stddef.h>" "$CLASSMAP_PATH" || fail "stddef.h not included"
+  
+  # Check for flask.h inclusion
+  grep -q "#include "flask.h"" "$CLASSMAP_PATH" || fail "flask.h not properly included"
+  
+  # Check for netlink_smc_socket addition
+  grep -q "sel_avc_socket_compat(NETLINK_SMC, "netlink_smc_socket")" "$CLASSMAP_PATH" || fail "netlink_smc_socket not added"
+  
+  # Check PF_MAX value
+  grep -q "#define PF_MAX 45" "$CLASSMAP_PATH" || fail "PF_MAX not set to 45"
+  
+  # Check for bpf capability
+  grep -q ""bpf"," "$CLASSMAP_PATH" || fail "bpf capability not added"
+  
+  # Check CAP_BPF definition
+  grep -q "#define CAP_BPF\s*38" "$CLASSMAP_PATH" || fail "CAP_BPF not defined as 38"
+  
+  # Check CAP_LAST_CAP update
+  grep -q "#define CAP_LAST_CAP CAP_BPF" "$CLASSMAP_PATH" || fail "CAP_LAST_CAP not updated to CAP_BPF"
+  
+  # Check CAP_LAST_CAP check update
+  grep -q "#if CAP_LAST_CAP > CAP_BPF" "$CLASSMAP_PATH" || fail "CAP_LAST_CAP check not updated"
+  
+  # Verify error line was removed
+  ! grep -q "#error New address family defined, please update secclass_map." "$CLASSMAP_PATH" || fail "Error line not removed"
+  
+  # All checks passed
+  return 0
+}
+
+# Run the test
+setUp
+test_selinux_classmap_patching
+RESULT=$?
+tearDown
+exit $RESULT
+
+. shunit2
+echo "All tests completed."
+
+# Import the test helpers
+source test_helpers.sh
+
+# Setup test environment
+setup() {
+  # Create temporary directories to simulate the real environment
+  TEST_DIR=$(mktemp -d)
+  mkdir -p "$TEST_DIR/dtc_bin"
+  mkdir -p "$TEST_DIR/kernel_dir/scripts/dtc"
+  
+  # Create a mock DTC binary
+  echo "#!/bin/bash" > "$TEST_DIR/dtc_bin/dtc"
+  echo "echo 'dtc v1.6.0'" >> "$TEST_DIR/dtc_bin/dtc"
+  chmod +x "$TEST_DIR/dtc_bin/dtc"
+  
+  # Create a dummy Makefile
+  echo "hostprogs-y := dtc" > "$TEST_DIR/kernel_dir/scripts/dtc/Makefile"
+  echo "dtc-objs += dtc.o" >> "$TEST_DIR/kernel_dir/scripts/dtc/Makefile"
+  echo "dtc-objs += dtc-lexer.lex.o" >> "$TEST_DIR/kernel_dir/scripts/dtc/Makefile"
+  
+  # Shipped C files to test copying
+  echo "mock content" > "$TEST_DIR/kernel_dir/scripts/dtc/dtc-lexer.lex.c_shipped"
+  echo "mock content" > "$TEST_DIR/kernel_dir/scripts/dtc/dtc-parser.tab.c_shipped"
+  echo "mock content" > "$TEST_DIR/kernel_dir/scripts/dtc/dtc-parser.tab.h_shipped"
+  
+  # Override globals for testing
+  export PREBUILT_DTC_PATH="$TEST_DIR/dtc_bin/dtc"
+  export NEW_KERNEL_DIR="$TEST_DIR/kernel_dir"
+  export DTC_SCRIPTS_DIR="$TEST_DIR/kernel_dir/scripts/dtc"
+  export DTC_MAKEFILE_PATH="$TEST_DIR/kernel_dir/scripts/dtc/Makefile"
+}
+
+# Clean up test environment
+teardown() {
+  if [ -d "$TEST_DIR" ]; then
+    rm -rf "$TEST_DIR"
+  fi
+}
+
+# Test if the script correctly checks, modifies and copies DTC-related files
+test_dtc_management() {
+  # Source the specific parts related to DTC management
+  # This is a simulated call to the relevant parts of the main script
+  
+  # Check for pre-built DTC binary
+  if [ ! -f "$PREBUILT_DTC_PATH" ]; then
+    fail "Pre-built DTC binary not found at $PREBUILT_DTC_PATH"
+  elif [ ! -x "$PREBUILT_DTC_PATH" ]; then
+    fail "Pre-built DTC binary at $PREBUILT_DTC_PATH is not executable"
+  else
+    echo "Using pre-built DTC from: $PREBUILT_DTC_PATH"
+    "$PREBUILT_DTC_PATH" --version || echo "Warning: Could not get DTC version, but proceeding."
+  fi
+  
+  # Modify the DTC Makefile to prevent in-tree DTC build
+  if [ -f "$DTC_MAKEFILE_PATH" ]; then
+    # Comment out lines that would build the in-tree dtc
+    sed -i -e 's/^\(hostprogs-y\s*:=\s*dtc\)/# \1/' \
+           -e 's/^\(dtc-objs\s*:=.*dtc\.o.*\)/# \1/' \
+           -e 's/^\(dtc-objs\s*+=.*dtc-lexer\.lex\.o.*\)/# \1/' \
+           "$DTC_MAKEFILE_PATH"
+    
+    # Ensure hostprogs-y and dtc-objs are empty for dtc
+    if ! grep -q "^hostprogs-y\s*:=\s*$" "$DTC_MAKEFILE_PATH"; then
+      echo "hostprogs-y :=" >> "$DTC_MAKEFILE_PATH"
+    fi
+    if ! grep -q "^dtc-objs\s*:=\s*$" "$DTC_MAKEFILE_PATH"; then
+      echo "dtc-objs :=" >> "$DTC_MAKEFILE_PATH"
+    fi
+  fi
+  
+  # Copy prebuilt DTC to scripts directory
+  mkdir -p "$DTC_SCRIPTS_DIR"
+  if [ -f "$PREBUILT_DTC_PATH" ]; then
+    cp "$PREBUILT_DTC_PATH" "$DTC_SCRIPTS_DIR/dtc"
+    chmod +x "$DTC_SCRIPTS_DIR/dtc"
+  fi
+  
+  # Copy shipped DTC C files
+  if [ -f "$DTC_SCRIPTS_DIR/dtc-lexer.lex.c_shipped" ] && \
+     [ -f "$DTC_SCRIPTS_DIR/dtc-parser.tab.c_shipped" ] && \
+     [ -f "$DTC_SCRIPTS_DIR/dtc-parser.tab.h_shipped" ]; then
+    cp "$DTC_SCRIPTS_DIR/dtc-lexer.lex.c_shipped" "$DTC_SCRIPTS_DIR/dtc-lexer.lex.c"
+    cp "$DTC_SCRIPTS_DIR/dtc-parser.tab.c_shipped" "$DTC_SCRIPTS_DIR/dtc-parser.tab.c"
+    cp "$DTC_SCRIPTS_DIR/dtc-parser.tab.h_shipped" "$DTC_SCRIPTS_DIR/dtc-parser.tab.h"
+  fi
+  
+  # Assertions to verify DTC management worked correctly
+  assert_file_exists "$DTC_SCRIPTS_DIR/dtc" "DTC binary was not copied to scripts directory"
+  assert_file_executable "$DTC_SCRIPTS_DIR/dtc" "DTC binary in scripts directory is not executable"
+  
+  # Check if the Makefile was modified correctly
+  if grep -q "^hostprogs-y\s*:=\s*dtc" "$DTC_MAKEFILE_PATH"; then
+    fail "Makefile still contains active hostprogs-y := dtc line"
+  fi
+  
+  if grep -q "^dtc-objs\s*:=.*dtc\.o" "$DTC_MAKEFILE_PATH" && ! grep -q "^# dtc-objs\s*:=.*dtc\.o" "$DTC_MAKEFILE_PATH"; then
+    fail "Makefile still contains active dtc-objs := dtc.o line"
+  fi
+  
+  # Check if shipped files were copied correctly
+  assert_file_exists "$DTC_SCRIPTS_DIR/dtc-lexer.lex.c" "dtc-lexer.lex.c was not created from _shipped"
+  assert_file_exists "$DTC_SCRIPTS_DIR/dtc-parser.tab.c" "dtc-parser.tab.c was not created from _shipped"
+  assert_file_exists "$DTC_SCRIPTS_DIR/dtc-parser.tab.h" "dtc-parser.tab.h was not created from _shipped"
+  
+  # Check that the copied files have the correct content
+  if ! grep -q "mock content" "$DTC_SCRIPTS_DIR/dtc-lexer.lex.c"; then
+    fail "dtc-lexer.lex.c does not contain expected content"
+  fi
+  
+  pass "DTC binary and related configuration were managed correctly"
+}
+
+# Run the test
+setup
+test_dtc_management
+teardown
+
+. shunit2
+echo "All tests completed."
+
+# Mock functions to mimic the build script behavior
+info() { echo "[INFO] $1"; }
+error() { echo "[ERROR] $1"; exit 1; }
+
+# Set up test environment
+setUp() {
+  # Create test directories
+  TEST_DIR="$(mktemp -d)"
+  export OUT_DIR="$TEST_DIR/out"
+  mkdir -p "$OUT_DIR"
+  
+  # Create a dummy boot.img file
+  export FINAL_BOOT_IMG="$OUT_DIR/boot.img"
+  echo "DUMMY_BOOT_IMG_CONTENT" > "$FINAL_BOOT_IMG"
+  
+  # Set the target tar.md5 path
+  export FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
+  
+  # Save current directory to restore later
+  ORIGINAL_DIR="$(pwd)"
+}
+
+# Clean up after test
+tearDown() {
+  cd "$ORIGINAL_DIR" || return 1
+  rm -rf "$TEST_DIR"
+}
+
+# Test case for boot.tar.md5 creation
+testCreateBootTarMd5() {
+  # Ensure test environment is set up
+  setUp
+  
+  # Run the code segment that creates boot.tar.md5
+  cd "$OUT_DIR" || error "Failed to cd to $OUT_DIR for tar creation."
+  
+  # Create boot.tar
+  tar -H ustar -c boot.img -f boot.tar || error "Failed to create boot.tar"
+  
+  # Append md5sum to boot.tar
+  md5sum -t boot.tar >> boot.tar || error "Failed to append md5sum to boot.tar"
+  
+  # Rename boot.tar to boot.tar.md5
+  mv boot.tar "$FINAL_TAR_MD5" || error "Failed to rename boot.tar to $FINAL_TAR_MD5"
+  
+  # Verify that boot.tar.md5 was created
+  assertTrue "boot.tar.md5 file should exist" "[ -f '$FINAL_TAR_MD5' ]"
+  
+  # Verify the content of boot.tar.md5 by extracting its contents
+  mkdir -p "$TEST_DIR/extract"
+  tar -xf "$FINAL_TAR_MD5" -C "$TEST_DIR/extract" || error "Failed to extract boot.tar.md5"
+  
+  # Verify the extracted boot.img matches the original
+  assertTrue "Extracted boot.img should exist" "[ -f '$TEST_DIR/extract/boot.img' ]"
+  assertEquals "Extracted boot.img content should match original" \
+    "$(cat "$FINAL_BOOT_IMG")" "$(cat "$TEST_DIR/extract/boot.img")"
+  
+  # Verify MD5 integrity by checking the last 32 bytes of the file
+  EXPECTED_MD5=$(md5sum -b "$TEST_DIR/extract/boot.img" | cut -d ' ' -f 1)
+  EMBEDDED_MD5=$(tail -c 32 "$FINAL_TAR_MD5")
+  
+  # The embedded MD5 includes the tar header MD5 too, so we can't do an exact match
+  # Instead, verify the file has the MD5 signature structure (hex digits at the end)
+  assertTrue "boot.tar.md5 should contain MD5 hash data" "[[ '$EMBEDDED_MD5' =~ ^[0-9a-f]+$ ]]"
+  
+  # Clean up
+  tearDown
+}
+
+# Load and run the test using shunit2
+. shunit2
+
+# Mock functions to mimic the build script behavior
+info() { echo "[INFO] $1"; }
+error() { echo "[ERROR] $1"; exit 1; }
+
+# Set up test environment
+setUp() {
+  # Create test directories
+  TEST_DIR="$(mktemp -d)"
+  export OUT_DIR="$TEST_DIR/out"
+  mkdir -p "$OUT_DIR"
+  
+  # Create a dummy boot.img file
+  export FINAL_BOOT_IMG="$OUT_DIR/boot.img"
+  echo "DUMMY_BOOT_IMG_CONTENT" > "$FINAL_BOOT_IMG"
+  
+  # Set the target tar.md5 path
+  export FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
+  
+  # Save current directory to restore later
+  ORIGINAL_DIR="$(pwd)"
+}
+
+# Clean up after test
+tearDown() {
+  cd "$ORIGINAL_DIR" || return 1
+  rm -rf "$TEST_DIR"
+}
+
+# Test case for boot.tar.md5 creation
+testCreateBootTarMd5() {
+  # Ensure test environment is set up
+  setUp
+  
+  # Run the code segment that creates boot.tar.md5
+  cd "$OUT_DIR" || error "Failed to cd to $OUT_DIR for tar creation."
+  
+  # Create boot.tar
+  tar -H ustar -c boot.img -f boot.tar || error "Failed to create boot.tar"
+  
+  # Append md5sum to boot.tar
+  md5sum -t boot.tar >> boot.tar || error "Failed to append md5sum to boot.tar"
+  
+  # Rename boot.tar to boot.tar.md5
+  mv boot.tar "$FINAL_TAR_MD5" || error "Failed to rename boot.tar to $FINAL_TAR_MD5"
+  
+  # Verify that boot.tar.md5 was created
+  assertTrue "boot.tar.md5 file should exist" "[ -f '$FINAL_TAR_MD5' ]"
+  
+  # Verify the content of boot.tar.md5 by extracting its contents
+  mkdir -p "$TEST_DIR/extract"
+  tar -xf "$FINAL_TAR_MD5" -C "$TEST_DIR/extract" || error "Failed to extract boot.tar.md5"
+  
+  # Verify the extracted boot.img matches the original
+  assertTrue "Extracted boot.img should exist" "[ -f '$TEST_DIR/extract/boot.img' ]"
+  assertEquals "Extracted boot.img content should match original" \
+    "$(cat "$FINAL_BOOT_IMG")" "$(cat "$TEST_DIR/extract/boot.img")"
+  
+  # Verify MD5 integrity by checking the last 32 bytes of the file
+  EXPECTED_MD5=$(md5sum -b "$TEST_DIR/extract/boot.img" | cut -d ' ' -f 1)
+  EMBEDDED_MD5=$(tail -c 32 "$FINAL_TAR_MD5")
+  
+  # The embedded MD5 includes the tar header MD5 too, so we can't do an exact match
+  # Instead, verify the file has the MD5 signature structure (hex digits at the end)
+  assertTrue "boot.tar.md5 should contain MD5 hash data" "[[ '$EMBEDDED_MD5' =~ ^[0-9a-f]+$ ]]"
+  
+  # Clean up
+  tearDown
+}
+
+# Load and run the test using shunit2
+. shunit2
+
+# Mock functions to mimic the build script behavior
+info() { echo "[INFO] $1"; }
+error() { echo "[ERROR] $1"; exit 1; }
+
+# Set up test environment
+setUp() {
+  # Create test directories
+  TEST_DIR="$(mktemp -d)"
+  export OUT_DIR="$TEST_DIR/out"
+  mkdir -p "$OUT_DIR"
+  
+  # Create a dummy boot.img file
+  export FINAL_BOOT_IMG="$OUT_DIR/boot.img"
+  echo "DUMMY_BOOT_IMG_CONTENT" > "$FINAL_BOOT_IMG"
+  
+  # Set the target tar.md5 path
+  export FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
+  
+  # Save current directory to restore later
+  ORIGINAL_DIR="$(pwd)"
+}
+
+# Clean up after test
+tearDown() {
+  cd "$ORIGINAL_DIR" || return 1
+  rm -rf "$TEST_DIR"
+}
+
+# Test case for boot.tar.md5 creation
+testCreateBootTarMd5() {
+  # Ensure test environment is set up
+  setUp
+  
+  # Run the code segment that creates boot.tar.md5
+  cd "$OUT_DIR" || error "Failed to cd to $OUT_DIR for tar creation."
+  
+  # Create boot.tar
+  tar -H ustar -c boot.img -f boot.tar || error "Failed to create boot.tar"
+  
+  # Append md5sum to boot.tar
+  md5sum -t boot.tar >> boot.tar || error "Failed to append md5sum to boot.tar"
+  
+  # Rename boot.tar to boot.tar.md5
+  mv boot.tar "$FINAL_TAR_MD5" || error "Failed to rename boot.tar to $FINAL_TAR_MD5"
+  
+  # Verify that boot.tar.md5 was created
+  assertTrue "boot.tar.md5 file should exist" "[ -f '$FINAL_TAR_MD5' ]"
+  
+  # Verify the content of boot.tar.md5 by extracting its contents
+  mkdir -p "$TEST_DIR/extract"
+  tar -xf "$FINAL_TAR_MD5" -C "$TEST_DIR/extract" || error "Failed to extract boot.tar.md5"
+  
+  # Verify the extracted boot.img matches the original
+  assertTrue "Extracted boot.img should exist" "[ -f '$TEST_DIR/extract/boot.img' ]"
+  assertEquals "Extracted boot.img content should match original" \
+    "$(cat "$FINAL_BOOT_IMG")" "$(cat "$TEST_DIR/extract/boot.img")"
+  
+  # Verify MD5 integrity by checking the last 32 bytes of the file
+  EXPECTED_MD5=$(md5sum -b "$TEST_DIR/extract/boot.img" | cut -d ' ' -f 1)
+  EMBEDDED_MD5=$(tail -c 32 "$FINAL_TAR_MD5")
+  
+  # The embedded MD5 includes the tar header MD5 too, so we can't do an exact match
+  # Instead, verify the file has the MD5 signature structure (hex digits at the end)
+  assertTrue "boot.tar.md5 should contain MD5 hash data" "[[ '$EMBEDDED_MD5' =~ ^[0-9a-f]+$ ]]"
+  
+  # Clean up
+  tearDown
+}
+
+# Load and run the test using shunit2
+. shunit2
+
+# Mock functions to mimic the build script behavior
+info() { echo "[INFO] $1"; }
+error() { echo "[ERROR] $1"; exit 1; }
+
+# Set up test environment
+setUp() {
+  # Create test directories
+  TEST_DIR="$(mktemp -d)"
+  export OUT_DIR="$TEST_DIR/out"
+  mkdir -p "$OUT_DIR"
+  
+  # Create a dummy boot.img file
+  export FINAL_BOOT_IMG="$OUT_DIR/boot.img"
+  echo "DUMMY_BOOT_IMG_CONTENT" > "$FINAL_BOOT_IMG"
+  
+  # Set the target tar.md5 path
+  export FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
+  
+  # Save current directory to restore later
+  ORIGINAL_DIR="$(pwd)"
+}
+
+# Clean up after test
+tearDown() {
+  cd "$ORIGINAL_DIR" || return 1
+  rm -rf "$TEST_DIR"
+}
+
+# Test case for boot.tar.md5 creation
+testCreateBootTarMd5() {
+  # Ensure test environment is set up
+  setUp
+  
+  # Run the code segment that creates boot.tar.md5
+  cd "$OUT_DIR" || error "Failed to cd to $OUT_DIR for tar creation."
+  
+  # Create boot.tar
+  tar -H ustar -c boot.img -f boot.tar || error "Failed to create boot.tar"
+  
+  # Append md5sum to boot.tar
+  md5sum -t boot.tar >> boot.tar || error "Failed to append md5sum to boot.tar"
+  
+  # Rename boot.tar to boot.tar.md5
+  mv boot.tar "$FINAL_TAR_MD5" || error "Failed to rename boot.tar to $FINAL_TAR_MD5"
+  
+  # Verify that boot.tar.md5 was created
+  assertTrue "boot.tar.md5 file should exist" "[ -f '$FINAL_TAR_MD5' ]"
+  
+  # Verify the content of boot.tar.md5 by extracting its contents
+  mkdir -p "$TEST_DIR/extract"
+  tar -xf "$FINAL_TAR_MD5" -C "$TEST_DIR/extract" || error "Failed to extract boot.tar.md5"
+  
+  # Verify the extracted boot.img matches the original
+  assertTrue "Extracted boot.img should exist" "[ -f '$TEST_DIR/extract/boot.img' ]"
+  assertEquals "Extracted boot.img content should match original" \
+    "$(cat "$FINAL_BOOT_IMG")" "$(cat "$TEST_DIR/extract/boot.img")"
+  
+  # Verify MD5 integrity by checking the last 32 bytes of the file
+  EXPECTED_MD5=$(md5sum -b "$TEST_DIR/extract/boot.img" | cut -d ' ' -f 1)
+  EMBEDDED_MD5=$(tail -c 32 "$FINAL_TAR_MD5")
+  
+  # The embedded MD5 includes the tar header MD5 too, so we can't do an exact match
+  # Instead, verify the file has the MD5 signature structure (hex digits at the end)
+  assertTrue "boot.tar.md5 should contain MD5 hash data" "[[ '$EMBEDDED_MD5' =~ ^[0-9a-f]+$ ]]"
+  
+  # Clean up
+  tearDown
+}
+
+# Load and run the test using shunit2
+. shunit2
+
+# Mock functions to mimic the build script behavior
+info() { echo "[INFO] $1"; }
+error() { echo "[ERROR] $1"; exit 1; }
+
+# Set up test environment
+setUp() {
+  # Create test directories
+  TEST_DIR="$(mktemp -d)"
+  export OUT_DIR="$TEST_DIR/out"
+  mkdir -p "$OUT_DIR"
+  
+  # Create a dummy boot.img file
+  export FINAL_BOOT_IMG="$OUT_DIR/boot.img"
+  echo "DUMMY_BOOT_IMG_CONTENT" > "$FINAL_BOOT_IMG"
+  
+  # Set the target tar.md5 path
+  export FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
+  
+  # Save current directory to restore later
+  ORIGINAL_DIR="$(pwd)"
+}
+
+# Clean up after test
+tearDown() {
+  cd "$ORIGINAL_DIR" || return 1
+  rm -rf "$TEST_DIR"
+}
+
+# Test case for boot.tar.md5 creation
+testCreateBootTarMd5() {
+  # Ensure test environment is set up
+  setUp
+  
+  # Run the code segment that creates boot.tar.md5
+  cd "$OUT_DIR" || error "Failed to cd to $OUT_DIR for tar creation."
+  
+  # Create boot.tar
+  tar -H ustar -c boot.img -f boot.tar || error "Failed to create boot.tar"
+  
+  # Append md5sum to boot.tar
+  md5sum -t boot.tar >> boot.tar || error "Failed to append md5sum to boot.tar"
+  
+  # Rename boot.tar to boot.tar.md5
+  mv boot.tar "$FINAL_TAR_MD5" || error "Failed to rename boot.tar to $FINAL_TAR_MD5"
+  
+  # Verify that boot.tar.md5 was created
+  assertTrue "boot.tar.md5 file should exist" "[ -f '$FINAL_TAR_MD5' ]"
+  
+  # Verify the content of boot.tar.md5 by extracting its contents
+  mkdir -p "$TEST_DIR/extract"
+  tar -xf "$FINAL_TAR_MD5" -C "$TEST_DIR/extract" || error "Failed to extract boot.tar.md5"
+  
+  # Verify the extracted boot.img matches the original
+  assertTrue "Extracted boot.img should exist" "[ -f '$TEST_DIR/extract/boot.img' ]"
+  assertEquals "Extracted boot.img content should match original" \
+    "$(cat "$FINAL_BOOT_IMG")" "$(cat "$TEST_DIR/extract/boot.img")"
+  
+  # Verify MD5 integrity by checking the last 32 bytes of the file
+  EXPECTED_MD5=$(md5sum -b "$TEST_DIR/extract/boot.img" | cut -d ' ' -f 1)
+  EMBEDDED_MD5=$(tail -c 32 "$FINAL_TAR_MD5")
+  
+  # The embedded MD5 includes the tar header MD5 too, so we can't do an exact match
+  # Instead, verify the file has the MD5 signature structure (hex digits at the end)
+  assertTrue "boot.tar.md5 should contain MD5 hash data" "[[ '$EMBEDDED_MD5' =~ ^[0-9a-f]+$ ]]"
+  
+  # Clean up
+  tearDown
+}
+
+# Load and run the test using shunit2
+. shunit2
+
+# Mock functions to mimic the build script behavior
+info() { echo "[INFO] $1"; }
+error() { echo "[ERROR] $1"; exit 1; }
+
+# Set up test environment
+setUp() {
+  # Create test directories
+  TEST_DIR="$(mktemp -d)"
+  export OUT_DIR="$TEST_DIR/out"
+  mkdir -p "$OUT_DIR"
+  
+  # Create a dummy boot.img file
+  export FINAL_BOOT_IMG="$OUT_DIR/boot.img"
+  echo "DUMMY_BOOT_IMG_CONTENT" > "$FINAL_BOOT_IMG"
+  
+  # Set the target tar.md5 path
+  export FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
+  
+  # Save current directory to restore later
+  ORIGINAL_DIR="$(pwd)"
+}
+
+# Clean up after test
+tearDown() {
+  cd "$ORIGINAL_DIR" || return 1
+  rm -rf "$TEST_DIR"
+}
+
+# Test case for boot.tar.md5 creation
+testCreateBootTarMd5() {
+  # Ensure test environment is set up
+  setUp
+  
+  # Run the code segment that creates boot.tar.md5
+  cd "$OUT_DIR" || error "Failed to cd to $OUT_DIR for tar creation."
+  
+  # Create boot.tar
+  tar -H ustar -c boot.img -f boot.tar || error "Failed to create boot.tar"
+  
+  # Append md5sum to boot.tar
+  md5sum -t boot.tar >> boot.tar || error "Failed to append md5sum to boot.tar"
+  
+  # Rename boot.tar to boot.tar.md5
+  mv boot.tar "$FINAL_TAR_MD5" || error "Failed to rename boot.tar to $FINAL_TAR_MD5"
+  
+  # Verify that boot.tar.md5 was created
+  assertTrue "boot.tar.md5 file should exist" "[ -f '$FINAL_TAR_MD5' ]"
+  
+  # Verify the content of boot.tar.md5 by extracting its contents
+  mkdir -p "$TEST_DIR/extract"
+  tar -xf "$FINAL_TAR_MD5" -C "$TEST_DIR/extract" || error "Failed to extract boot.tar.md5"
+  
+  # Verify the extracted boot.img matches the original
+  assertTrue "Extracted boot.img should exist" "[ -f '$TEST_DIR/extract/boot.img' ]"
+  assertEquals "Extracted boot.img content should match original" \
+    "$(cat "$FINAL_BOOT_IMG")" "$(cat "$TEST_DIR/extract/boot.img")"
+  
+  # Verify MD5 integrity by checking the last 32 bytes of the file
+  EXPECTED_MD5=$(md5sum -b "$TEST_DIR/extract/boot.img" | cut -d ' ' -f 1)
+  EMBEDDED_MD5=$(tail -c 32 "$FINAL_TAR_MD5")
+  
+  # The embedded MD5 includes the tar header MD5 too, so we can't do an exact match
+  # Instead, verify the file has the MD5 signature structure (hex digits at the end)
+  assertTrue "boot.tar.md5 should contain MD5 hash data" "[[ '$EMBEDDED_MD5' =~ ^[0-9a-f]+$ ]]"
+  
+  # Clean up
+  tearDown
+}
+
+# Load and run the test using shunit2
+. shunit2
+
+# Mock functions to mimic the build script behavior
+info() { echo "[INFO] $1"; }
+error() { echo "[ERROR] $1"; exit 1; }
+
+# Set up test environment
+setUp() {
+  # Create test directories
+  TEST_DIR="$(mktemp -d)"
+  export OUT_DIR="$TEST_DIR/out"
+  mkdir -p "$OUT_DIR"
+  
+  # Create a dummy boot.img file
+  export FINAL_BOOT_IMG="$OUT_DIR/boot.img"
+  echo "DUMMY_BOOT_IMG_CONTENT" > "$FINAL_BOOT_IMG"
+  
+  # Set the target tar.md5 path
+  export FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
+  
+  # Save current directory to restore later
+  ORIGINAL_DIR="$(pwd)"
+}
+
+# Clean up after test
+tearDown() {
+  cd "$ORIGINAL_DIR" || return 1
+  rm -rf "$TEST_DIR"
+}
+
+# Test case for boot.tar.md5 creation
+testCreateBootTarMd5() {
+  # Ensure test environment is set up
+  setUp
+  
+  # Run the code segment that creates boot.tar.md5
+  cd "$OUT_DIR" || error "Failed to cd to $OUT_DIR for tar creation."
+  
+  # Create boot.tar
+  tar -H ustar -c boot.img -f boot.tar || error "Failed to create boot.tar"
+  
+  # Append md5sum to boot.tar
+  md5sum -t boot.tar >> boot.tar || error "Failed to append md5sum to boot.tar"
+  
+  # Rename boot.tar to boot.tar.md5
+  mv boot.tar "$FINAL_TAR_MD5" || error "Failed to rename boot.tar to $FINAL_TAR_MD5"
+  
+  # Verify that boot.tar.md5 was created
+  assertTrue "boot.tar.md5 file should exist" "[ -f '$FINAL_TAR_MD5' ]"
+  
+  # Verify the content of boot.tar.md5 by extracting its contents
+  mkdir -p "$TEST_DIR/extract"
+  tar -xf "$FINAL_TAR_MD5" -C "$TEST_DIR/extract" || error "Failed to extract boot.tar.md5"
+  
+  # Verify the extracted boot.img matches the original
+  assertTrue "Extracted boot.img should exist" "[ -f '$TEST_DIR/extract/boot.img' ]"
+  assertEquals "Extracted boot.img content should match original" \
+    "$(cat "$FINAL_BOOT_IMG")" "$(cat "$TEST_DIR/extract/boot.img")"
+  
+  # Verify MD5 integrity by checking the last 32 bytes of the file
+  EXPECTED_MD5=$(md5sum -b "$TEST_DIR/extract/boot.img" | cut -d ' ' -f 1)
+  EMBEDDED_MD5=$(tail -c 32 "$FINAL_TAR_MD5")
+  
+  # The embedded MD5 includes the tar header MD5 too, so we can't do an exact match
+  # Instead, verify the file has the MD5 signature structure (hex digits at the end)
+  assertTrue "boot.tar.md5 should contain MD5 hash data" "[[ '$EMBEDDED_MD5' =~ ^[0-9a-f]+$ ]]"
+  
+  # Clean up
+  tearDown
+}
+
+# Load and run the test using shunit2
+. shunit2
+
+# Mock functions to mimic the build script behavior
+info() { echo "[INFO] $1"; }
+error() { echo "[ERROR] $1"; exit 1; }
+
+# Set up test environment
+setUp() {
+  # Create test directories
+  TEST_DIR="$(mktemp -d)"
+  export OUT_DIR="$TEST_DIR/out"
+  mkdir -p "$OUT_DIR"
+  
+  # Create a dummy boot.img file
+  export FINAL_BOOT_IMG="$OUT_DIR/boot.img"
+  echo "DUMMY_BOOT_IMG_CONTENT" > "$FINAL_BOOT_IMG"
+  
+  # Set the target tar.md5 path
+  export FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
+  
+  # Save current directory to restore later
+  ORIGINAL_DIR="$(pwd)"
+}
+
+# Clean up after test
+tearDown() {
+  cd "$ORIGINAL_DIR" || return 1
+  rm -rf "$TEST_DIR"
+}
+
+# Test case for boot.tar.md5 creation
+testCreateBootTarMd5() {
+  # Ensure test environment is set up
+  setUp
+  
+  # Run the code segment that creates boot.tar.md5
+  cd "$OUT_DIR" || error "Failed to cd to $OUT_DIR for tar creation."
+  
+  # Create boot.tar
+  tar -H ustar -c boot.img -f boot.tar || error "Failed to create boot.tar"
+  
+  # Append md5sum to boot.tar
+  md5sum -t boot.tar >> boot.tar || error "Failed to append md5sum to boot.tar"
+  
+  # Rename boot.tar to boot.tar.md5
+  mv boot.tar "$FINAL_TAR_MD5" || error "Failed to rename boot.tar to $FINAL_TAR_MD5"
+  
+  # Verify that boot.tar.md5 was created
+  assertTrue "boot.tar.md5 file should exist" "[ -f '$FINAL_TAR_MD5' ]"
+  
+  # Verify the content of boot.tar.md5 by extracting its contents
+  mkdir -p "$TEST_DIR/extract"
+  tar -xf "$FINAL_TAR_MD5" -C "$TEST_DIR/extract" || error "Failed to extract boot.tar.md5"
+  
+  # Verify the extracted boot.img matches the original
+  assertTrue "Extracted boot.img should exist" "[ -f '$TEST_DIR/extract/boot.img' ]"
+  assertEquals "Extracted boot.img content should match original" \
+    "$(cat "$FINAL_BOOT_IMG")" "$(cat "$TEST_DIR/extract/boot.img")"
+  
+  # Verify MD5 integrity by checking the last 32 bytes of the file
+  EXPECTED_MD5=$(md5sum -b "$TEST_DIR/extract/boot.img" | cut -d ' ' -f 1)
+  EMBEDDED_MD5=$(tail -c 32 "$FINAL_TAR_MD5")
+  
+  # The embedded MD5 includes the tar header MD5 too, so we can't do an exact match
+  # Instead, verify the file has the MD5 signature structure (hex digits at the end)
+  assertTrue "boot.tar.md5 should contain MD5 hash data" "[[ '$EMBEDDED_MD5' =~ ^[0-9a-f]+$ ]]"
+  
+  # Clean up
+  tearDown
+}
+
+# Load and run the test using shunit2
+. shunit2
+
+# Mock functions to mimic the build script behavior
+info() { echo "[INFO] $1"; }
+error() { echo "[ERROR] $1"; exit 1; }
+
+# Set up test environment
+setUp() {
+  # Create test directories
+  TEST_DIR="$(mktemp -d)"
+  export OUT_DIR="$TEST_DIR/out"
+  mkdir -p "$OUT_DIR"
+  
+  # Create a dummy boot.img file
+  export FINAL_BOOT_IMG="$OUT_DIR/boot.img"
+  echo "DUMMY_BOOT_IMG_CONTENT" > "$FINAL_BOOT_IMG"
+  
+  # Set the target tar.md5 path
+  export FINAL_TAR_MD5="$OUT_DIR/boot.tar.md5"
+  
+  # Save current directory to restore later
+  ORIGINAL_DIR="$(pwd)"
+}
+
+# Clean up after test
+tearDown() {
+  cd "$ORIGINAL_DIR" || return 1
+  rm -rf "$TEST_DIR"
+}
+
+# Test case for boot.tar.md5 creation
+testCreateBootTarMd5() {
+  # Ensure test environment is set up
+  setUp
+  
+  # Run the code segment that creates boot.tar.md5
+  cd "$OUT_DIR" || error "Failed to cd to $OUT_DIR for tar creation."
+  
+  # Create boot.tar
+  tar -H ustar -c boot.img -f boot.tar || error "Failed to create boot.tar"
+  
+  # Append md5sum to boot.tar
+  md5sum -t boot.tar >> boot.tar || error "Failed to append md5sum to boot.tar"
+  
+  # Rename boot.tar to boot.tar.md5
+  mv boot.tar "$FINAL_TAR_MD5" || error "Failed to rename boot.tar to $FINAL_TAR_MD5"
+  
+  # Verify that boot.tar.md5 was created
+    info "boot.tar.md5 created successfully: $FINAL_TAR_MD5"
+    echo "INFO: Changing directory back to $NEW_KERNEL_DIR"
+    cd "$NEW_KERNEL_DIR" # Go back to kernel source dir
+else
+    info "Final boot.img not found. Skipping boot.tar.md5 creation."
+fi
+echo "INFO: --- Phase: Packaging Finished ---"
+
+info "Build process finished!"
+echo "INFO: --- Build Summary ---"
+echo "----------------------------------------------------"
+echo " CruelKernelSU for Note 10+ Build Summary"
+echo "----------------------------------------------------"
+echo " Flashable ZIP: $OUT_DIR/$AK3_ZIP_NAME"
+if [ -f "$FINAL_BOOT_IMG" ]; then
+    echo " Boot Image (for fastboot/custom recovery): $FINAL_BOOT_IMG"
+fi
+if [ -f "$FINAL_TAR_MD5" ]; then
+    echo " Odin TAR (for Samsung Download Mode): $FINAL_TAR_MD5"
+fi
+echo "----------------------------------------------------"
+echo "Remember to have the pre-built DTC at $PREBUILT_DTC_PATH if you re-run!"

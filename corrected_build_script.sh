@@ -235,19 +235,21 @@ make "${make_flags[@]}" "$DEFCONFIG"
 
 # --- Configure kernel options ---
 info "Configuring base kernel options..."
-# TEMPORARILY DISABLED: KernelSU specific options
-# echo "CONFIG_KPROBES=y" >> "$OUT_DIR/.config"
-# echo "CONFIG_HAVE_KPROBES=y" >> "$OUT_DIR/.config"
-# echo "CONFIG_KPROBE_EVENTS=y" >> "$OUT_DIR/.config"
-echo "# CONFIG_OVERLAY_FS is not set" >> "$OUT_DIR/.config"
+# PHASE 2: ENABLE KernelSU specific options
+info "Enabling KernelSU core configuration options for Phase 2..."
+echo "CONFIG_KPROBES=y" >> "$OUT_DIR/.config"
+echo "CONFIG_HAVE_KPROBES=y" >> "$OUT_DIR/.config"
+echo "CONFIG_KPROBE_EVENTS=y" >> "$OUT_DIR/.config"
+echo "CONFIG_OVERLAY_FS=y" >> "$OUT_DIR/.config"
 echo "CONFIG_MODULE_SIG=n" >> "$OUT_DIR/.config"
 
 # Disable problematic TCP congestion control modules
 echo "# CONFIG_TCP_CONG_WESTWOOD is not set" >> "$OUT_DIR/.config"
 echo "# CONFIG_TCP_CONG_HTCP is not set" >> "$OUT_DIR/.config"
 
-# Ensure KernelSU is disabled
-echo "# CONFIG_KSU is not set" >> "$OUT_DIR/.config"
+# PHASE 2: ENABLE KernelSU
+info "Enabling CONFIG_KSU for KernelSU integration..."
+echo "CONFIG_KSU=y" >> "$OUT_DIR/.config"
 
 # Configure Mali GPU driver for Exynos 9820 (Mali-G76 MP12)
 echo "CONFIG_MALI_DDK_VERSION=y" >> "$OUT_DIR/.config"

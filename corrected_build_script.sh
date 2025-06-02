@@ -740,6 +740,10 @@ int dhd_smmu_fault_handler(struct inode *inode, unsigned long fault_addr)
 }
 EXPORT_SYMBOL(dhd_smmu_fault_handler);
 
+/* Samsung DisplayPort HDCP state */
+int dp_hdcp_state = 0;
+EXPORT_SYMBOL(dp_hdcp_state);
+
 /*=============================================================================
  * Module Information
  *============================================================================*/

@@ -246,6 +246,10 @@ echo "# CONFIG_FB_SAMSUNG is not set" >> "$OUT_DIR/.config"
 # Disable KPERFMON that has missing perflog.h
 echo "# CONFIG_KPERFMON is not set" >> "$OUT_DIR/.config"
 
+# Disable entire media subsystem that has build issues
+echo "# CONFIG_MEDIA_SUPPORT is not set" >> "$OUT_DIR/.config"
+echo "# CONFIG_EXYNOS_MFC is not set" >> "$OUT_DIR/.config"
+
 # Add dummy define for CONFIG_OPTION_REGION if not present in modem_main.c
 MODEM_MAIN_C_PATH="$KERNEL_DIR/drivers/misc/modem_v1/modem_main.c"
 if [ -f "$MODEM_MAIN_C_PATH" ]; then

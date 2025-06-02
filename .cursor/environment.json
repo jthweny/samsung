@@ -19,13 +19,6 @@
   ],
   "install": "echo 'Verifying environment...'; echo 'PATH is: $PATH'; clang --version; aarch64-linux-gnu-gcc --version; dtc --version; python3 --version",
   "start": "echo 'Android Kernel Build Agent Ready. Waiting for master prompt.'; sleep infinity",
-  "terminals": [
-    {
-      "name": "Build Terminal",
-      "directory": ".",
-      "command": "bash"
-    }
-  ],
   "env": {
     "TOOLCHAIN_DIR": "/opt/proton-clang",
     "PREBUILT_DTC_PATH": "/usr/local/bin/dtc",
@@ -44,5 +37,9 @@
     "HOSTCC": "gcc",
     "HOSTCXX": "g++",
     "MESSAGE": "Hello from minimal agent"
+  },
+  "build": {
+    "context": ".",
+    "dockerfile": "Dockerfile"
   }
-} 
+}

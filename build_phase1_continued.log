@@ -1,34 +1,724 @@
-/bin/sh: 0: Illegal option -r
-  HOSTCC  scripts/basic/fixdep
-  HOSTCC  scripts/kconfig/conf.o
-  SHIPPED scripts/kconfig/zconf.tab.c
-  SHIPPED scripts/kconfig/zconf.lex.c
-  HOSTCC  scripts/kconfig/zconf.tab.o
-In file included from scripts/kconfig/zconf.tab.c:2470:
-In function ‘dep_stack_insert’,
-    inlined from ‘sym_check_print_recursive’ at scripts/kconfig/symbol.c:1123:3,
-    inlined from ‘sym_check_deps’ at scripts/kconfig/symbol.c:1300:3:
-scripts/kconfig/symbol.c:1099:19: warning: storing the address of local variable ‘cv_stack’ in ‘check_top’ [-Wdangling-pointer=]
- 1099 |         check_top = stack;
-      |         ~~~~~~~~~~^~~~~~~
-scripts/kconfig/symbol.c: In function ‘sym_check_deps’:
-scripts/kconfig/symbol.c:1120:26: note: ‘cv_stack’ declared here
- 1120 |         struct dep_stack cv_stack;
-      |                          ^~~~~~~~
-scripts/kconfig/symbol.c:1090:4: note: ‘check_top’ declared here
- 1090 | } *check_top;
-      |    ^~~~~~~~~
-  HOSTLD  scripts/kconfig/conf
-scripts/kconfig/conf  --silentoldconfig Kconfig
-Kconfig:16:warning: environment variable ANDROID_MAJOR_VERSION undefined
-drivers/leds/Kconfig:734:warning: ignoring type redefinition of 'LEDS_KTD2692' from 'tristate' to 'boolean'
-drivers/samsung/misc/Kconfig:110:warning: leading whitespace ignored
-***
-*** Configuration file ".config" not found!
-***
-*** Please run some configurator (e.g. "make oldconfig" or
-*** "make menuconfig" or "make xconfig").
-***
-make[2]: *** [scripts/kconfig/Makefile:40: silentoldconfig] Error 1
-make[1]: *** [Makefile:554: silentoldconfig] Error 2
-make: *** No rule to make target 'include/config/auto.conf', needed by 'include/config/kernel.release'.  Stop.
+/workspace/samsung-exynos9820/mm/page_alloc.c: In function ‘mem_init_print_info’:
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6825:9: note: in expansion of macro ‘adj_init_size’
+ 6825 |         adj_init_size(__init_begin, __init_end, init_data_size,
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: note: use ‘&__init_begin[0] <= &_sinittext[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6825:9: note: in expansion of macro ‘adj_init_size’
+ 6825 |         adj_init_size(__init_begin, __init_end, init_data_size,
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6825:9: note: in expansion of macro ‘adj_init_size’
+ 6825 |         adj_init_size(__init_begin, __init_end, init_data_size,
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: note: use ‘&_sinittext[0] < &__init_end[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6825:9: note: in expansion of macro ‘adj_init_size’
+ 6825 |         adj_init_size(__init_begin, __init_end, init_data_size,
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6827:9: note: in expansion of macro ‘adj_init_size’
+ 6827 |         adj_init_size(_stext, _etext, codesize, _sinittext, init_code_size);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: note: use ‘&_stext[0] <= &_sinittext[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6827:9: note: in expansion of macro ‘adj_init_size’
+ 6827 |         adj_init_size(_stext, _etext, codesize, _sinittext, init_code_size);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6827:9: note: in expansion of macro ‘adj_init_size’
+ 6827 |         adj_init_size(_stext, _etext, codesize, _sinittext, init_code_size);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: note: use ‘&_sinittext[0] < &_etext[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6827:9: note: in expansion of macro ‘adj_init_size’
+ 6827 |         adj_init_size(_stext, _etext, codesize, _sinittext, init_code_size);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6828:9: note: in expansion of macro ‘adj_init_size’
+ 6828 |         adj_init_size(_sdata, _edata, datasize, __init_begin, init_data_size);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: note: use ‘&_sdata[0] <= &__init_begin[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6828:9: note: in expansion of macro ‘adj_init_size’
+ 6828 |         adj_init_size(_sdata, _edata, datasize, __init_begin, init_data_size);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6828:9: note: in expansion of macro ‘adj_init_size’
+ 6828 |         adj_init_size(_sdata, _edata, datasize, __init_begin, init_data_size);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: note: use ‘&__init_begin[0] < &_edata[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6828:9: note: in expansion of macro ‘adj_init_size’
+ 6828 |         adj_init_size(_sdata, _edata, datasize, __init_begin, init_data_size);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6829:9: note: in expansion of macro ‘adj_init_size’
+ 6829 |         adj_init_size(_stext, _etext, codesize, __start_rodata, rosize);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: note: use ‘&_stext[0] <= &__start_rodata[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6829:9: note: in expansion of macro ‘adj_init_size’
+ 6829 |         adj_init_size(_stext, _etext, codesize, __start_rodata, rosize);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6829:9: note: in expansion of macro ‘adj_init_size’
+ 6829 |         adj_init_size(_stext, _etext, codesize, __start_rodata, rosize);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: note: use ‘&__start_rodata[0] < &_etext[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6829:9: note: in expansion of macro ‘adj_init_size’
+ 6829 |         adj_init_size(_stext, _etext, codesize, __start_rodata, rosize);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6830:9: note: in expansion of macro ‘adj_init_size’
+ 6830 |         adj_init_size(_sdata, _edata, datasize, __start_rodata, rosize);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:27: note: use ‘&_sdata[0] <= &__start_rodata[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                           ^~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6830:9: note: in expansion of macro ‘adj_init_size’
+ 6830 |         adj_init_size(_sdata, _edata, datasize, __start_rodata, rosize);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: warning: comparison between two arrays [-Warray-compare]
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6830:9: note: in expansion of macro ‘adj_init_size’
+ 6830 |         adj_init_size(_sdata, _edata, datasize, __start_rodata, rosize);
+      |         ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/mm/page_alloc.c:6821:41: note: use ‘&__start_rodata[0] < &_edata[0]’ to compare the addresses
+ 6821 |                 if (start <= pos && pos < end && size > adj) \
+      |                                         ^
+/workspace/samsung-exynos9820/mm/page_alloc.c:6830:9: note: in expansion of macro ‘adj_init_size’
+ 6830 |         adj_init_size(_sdata, _edata, datasize, __start_rodata, rosize);
+      |         ^~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/security/samsung/five/five_dmverity.c:24:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/include/linux/printk.h:7,
+                 from /workspace/samsung-exynos9820/include/linux/kernel.h:14,
+                 from /workspace/samsung-exynos9820/include/linux/list.h:9,
+                 from /workspace/samsung-exynos9820/include/linux/module.h:9,
+                 from /workspace/samsung-exynos9820/drivers/block/zram/zram_drv.c:18:
+/workspace/samsung-exynos9820/drivers/block/zram/zram_drv.c: In function ‘fallocate_block’:
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:5:25: warning: format ‘%lx’ expects argument of type ‘long unsigned int’, but argument 3 has type ‘loff_t’ {aka ‘long long int’} [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:11:25: note: in expansion of macro ‘KERN_SOH’
+   11 | #define KERN_ERR        KERN_SOH "3"    /* error conditions */
+      |                         ^~~~~~~~
+/workspace/samsung-exynos9820/include/linux/printk.h:309:16: note: in expansion of macro ‘KERN_ERR’
+  309 |         printk(KERN_ERR pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~
+/workspace/samsung-exynos9820/drivers/block/zram/zram_drv.c:409:25: note: in expansion of macro ‘pr_err’
+  409 |                         pr_err("%s pos %lx failed %d\n", __func__, pos, ret);
+      |                         ^~~~~~
+/workspace/samsung-exynos9820/drivers/block/zram/zram_drv.c: In function ‘zram_pin_backing_file’:
+/workspace/samsung-exynos9820/drivers/block/zram/zram_drv.c:382:9: warning: ignoring return value of ‘copy_to_user’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  382 |         copy_to_user(buf, &set, sizeof(int));
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/security/sdp/dd_kernel_crypto.c: In function ‘get_dd_file_key’:
+/workspace/samsung-exynos9820/security/sdp/dd_kernel_crypto.c:496:5: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+  496 |     if (rc)
+      |     ^~
+/workspace/samsung-exynos9820/security/sdp/dd_kernel_crypto.c:499:9: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+  499 |         crypto_free_aead(key_aead);
+      |         ^~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/include/linux/kernel.h:10,
+                 from /workspace/samsung-exynos9820/include/linux/list.h:9,
+                 from /workspace/samsung-exynos9820/include/linux/module.h:9,
+                 from /workspace/samsung-exynos9820/net/ethernet/eth.c:40:
+/workspace/samsung-exynos9820/net/ethernet/eth.c: In function ‘eth_type_trans’:
+/workspace/samsung-exynos9820/net/ethernet/eth.c:168:22: warning: ‘is_multicast_ether_addr_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
+  168 |         if (unlikely(is_multicast_ether_addr_64bits(eth->h_dest))) {
+/workspace/samsung-exynos9820/include/linux/compiler.h:77:45: note: in definition of macro ‘unlikely’
+   77 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+      |                                             ^
+/workspace/samsung-exynos9820/net/ethernet/eth.c:168:22: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+  168 |         if (unlikely(is_multicast_ether_addr_64bits(eth->h_dest))) {
+/workspace/samsung-exynos9820/include/linux/compiler.h:77:45: note: in definition of macro ‘unlikely’
+   77 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+      |                                             ^
+In file included from /workspace/samsung-exynos9820/net/ethernet/eth.c:50:
+/workspace/samsung-exynos9820/include/linux/etherdevice.h:133:20: note: in a call to function ‘is_multicast_ether_addr_64bits’
+  133 | static inline bool is_multicast_ether_addr_64bits(const u8 addr[6+2])
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/net/ethernet/eth.c:169:21: warning: ‘ether_addr_equal_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
+  169 |                 if (ether_addr_equal_64bits(eth->h_dest, dev->broadcast))
+      |                     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/net/ethernet/eth.c:169:21: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+/workspace/samsung-exynos9820/net/ethernet/eth.c:169:21: note: referencing argument 2 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+/workspace/samsung-exynos9820/include/linux/etherdevice.h:347:20: note: in a call to function ‘ether_addr_equal_64bits’
+  347 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/net/ethernet/eth.c:174:28: warning: ‘ether_addr_equal_64bits’ reading 8 bytes from a region of size 6 [-Wstringop-overread]
+  174 |         else if (unlikely(!ether_addr_equal_64bits(eth->h_dest,
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  175 |                                                    dev->dev_addr)))
+      |                                                    ~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/compiler.h:77:45: note: in definition of macro ‘unlikely’
+   77 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+      |                                             ^
+/workspace/samsung-exynos9820/net/ethernet/eth.c:174:28: note: referencing argument 1 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+  174 |         else if (unlikely(!ether_addr_equal_64bits(eth->h_dest,
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  175 |                                                    dev->dev_addr)))
+      |                                                    ~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/compiler.h:77:45: note: in definition of macro ‘unlikely’
+   77 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+      |                                             ^
+/workspace/samsung-exynos9820/net/ethernet/eth.c:174:28: note: referencing argument 2 of type ‘const u8[8]’ {aka ‘const unsigned char[8]’}
+  174 |         else if (unlikely(!ether_addr_equal_64bits(eth->h_dest,
+      |                            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  175 |                                                    dev->dev_addr)))
+      |                                                    ~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/compiler.h:77:45: note: in definition of macro ‘unlikely’
+   77 | # define unlikely(x)    __builtin_expect(!!(x), 0)
+      |                                             ^
+/workspace/samsung-exynos9820/include/linux/etherdevice.h:347:20: note: in a call to function ‘ether_addr_equal_64bits’
+  347 | static inline bool ether_addr_equal_64bits(const u8 addr1[6+2],
+      |                    ^~~~~~~~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/kernel/extable.c: In function ‘sort_main_extable’:
+/workspace/samsung-exynos9820/kernel/extable.c:47:59: warning: comparison between two arrays [-Warray-compare]
+   47 |         if (main_extable_sort_needed && __stop___ex_table > __start___ex_table) {
+      |                                                           ^
+/workspace/samsung-exynos9820/kernel/extable.c:47:59: note: use ‘&__stop___ex_table[0] > &__start___ex_table[0]’ to compare the addresses
+In file included from /workspace/samsung-exynos9820/include/linux/printk.h:7,
+                 from /workspace/samsung-exynos9820/include/linux/kernel.h:14,
+                 from /workspace/samsung-exynos9820/net/ipv6/addrconf.c:45:
+/workspace/samsung-exynos9820/net/ipv6/addrconf.c: In function ‘addrconf_dad_work’:
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:5:25: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 2 has type ‘int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:14:25: note: in expansion of macro ‘KERN_SOH’
+   14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+      |                         ^~~~~~~~
+/workspace/samsung-exynos9820/include/linux/printk.h:316:16: note: in expansion of macro ‘KERN_INFO’
+  316 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~~
+/workspace/samsung-exynos9820/net/ipv6/addrconf.c:4067:17: note: in expansion of macro ‘pr_info’
+ 4067 |                 pr_info("Reduce waing time from %lu to %lu (HZ=%lu) to send NS for quick transmission for %s\n",
+      |                 ^~~~~~~
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:5:25: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 3 has type ‘int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:14:25: note: in expansion of macro ‘KERN_SOH’
+   14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+      |                         ^~~~~~~~
+/workspace/samsung-exynos9820/include/linux/printk.h:316:16: note: in expansion of macro ‘KERN_INFO’
+  316 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~~
+/workspace/samsung-exynos9820/net/ipv6/addrconf.c:4067:17: note: in expansion of macro ‘pr_info’
+ 4067 |                 pr_info("Reduce waing time from %lu to %lu (HZ=%lu) to send NS for quick transmission for %s\n",
+      |                 ^~~~~~~
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:5:25: warning: format ‘%lu’ expects argument of type ‘long unsigned int’, but argument 4 has type ‘int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:14:25: note: in expansion of macro ‘KERN_SOH’
+   14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
+      |                         ^~~~~~~~
+/workspace/samsung-exynos9820/include/linux/printk.h:316:16: note: in expansion of macro ‘KERN_INFO’
+  316 |         printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
+      |                ^~~~~~~~~
+/workspace/samsung-exynos9820/net/ipv6/addrconf.c:4067:17: note: in expansion of macro ‘pr_info’
+ 4067 |                 pr_info("Reduce waing time from %lu to %lu (HZ=%lu) to send NS for quick transmission for %s\n",
+      |                 ^~~~~~~
+/workspace/samsung-exynos9820/mm/memblock.c: In function ‘memsize_kernel_show’:
+/workspace/samsung-exynos9820/mm/memblock.c:1943:28: warning: comparison between two arrays [-Warray-compare]
+ 1943 |         if (__start_rodata < _etext)
+      |                            ^
+/workspace/samsung-exynos9820/mm/memblock.c:1943:28: note: use ‘&__start_rodata[0] < &_etext[0]’ to compare the addresses
+/workspace/samsung-exynos9820/kernel/sched/core.c: In function ‘sched_init’:
+/workspace/samsung-exynos9820/kernel/sched/core.c:6077:30: warning: the comparison will always evaluate as ‘false’ for the address of ‘cpu_isolated_map’ will never be NULL [-Waddress]
+ 6077 |         if (cpu_isolated_map == NULL)
+      |                              ^~
+/workspace/samsung-exynos9820/kernel/sched/core.c:92:15: note: ‘cpu_isolated_map’ declared here
+   92 | cpumask_var_t cpu_isolated_map;
+      |               ^~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/kernel/trace/trace.c: In function ‘tracer_alloc_buffers’:
+/workspace/samsung-exynos9820/kernel/trace/trace.c:8299:40: warning: comparison between two arrays [-Warray-compare]
+ 8299 |         if (__stop___trace_bprintk_fmt != __start___trace_bprintk_fmt)
+      |                                        ^~
+/workspace/samsung-exynos9820/kernel/trace/trace.c:8299:40: note: use ‘&__stop___trace_bprintk_fmt[0] != &__start___trace_bprintk_fmt[0]’ to compare the addresses
+/workspace/samsung-exynos9820/kernel/profile.c: In function ‘profile_dead_cpu’:
+/workspace/samsung-exynos9820/kernel/profile.c:338:27: warning: the comparison will always evaluate as ‘true’ for the address of ‘prof_cpu_mask’ will never be NULL [-Waddress]
+  338 |         if (prof_cpu_mask != NULL)
+      |                           ^~
+/workspace/samsung-exynos9820/kernel/profile.c:48:22: note: ‘prof_cpu_mask’ declared here
+   48 | static cpumask_var_t prof_cpu_mask;
+      |                      ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/kernel/profile.c: In function ‘profile_online_cpu’:
+/workspace/samsung-exynos9820/kernel/profile.c:375:27: warning: the comparison will always evaluate as ‘true’ for the address of ‘prof_cpu_mask’ will never be NULL [-Waddress]
+  375 |         if (prof_cpu_mask != NULL)
+      |                           ^~
+/workspace/samsung-exynos9820/kernel/profile.c:48:22: note: ‘prof_cpu_mask’ declared here
+   48 | static cpumask_var_t prof_cpu_mask;
+      |                      ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/kernel/profile.c: In function ‘profile_tick’:
+/workspace/samsung-exynos9820/kernel/profile.c:405:47: warning: the comparison will always evaluate as ‘true’ for the address of ‘prof_cpu_mask’ will never be NULL [-Waddress]
+  405 |         if (!user_mode(regs) && prof_cpu_mask != NULL &&
+      |                                               ^~
+/workspace/samsung-exynos9820/kernel/profile.c:48:22: note: ‘prof_cpu_mask’ declared here
+   48 | static cpumask_var_t prof_cpu_mask;
+      |                      ^~~~~~~~~~~~~
+/workspace/samsung-exynos9820/kernel/sched/ems/load_balance.c: In function ‘get_last_level’:
+/workspace/samsung-exynos9820/kernel/sched/ems/load_balance.c:143:32: warning: the comparison will always evaluate as ‘false’ for the pointer operand in ‘ou + (sizetype)((long unsigned int)level * 32)’ must not be NULL [-Waddress]
+  143 |                 if (&ou[level] == NULL)
+      |                                ^~
+/workspace/samsung-exynos9820/fs/overlayfs/super.c: In function ‘ovl_fill_super’:
+/workspace/samsung-exynos9820/fs/overlayfs/super.c:985:17: error: implicit declaration of function ‘rkp_reset_mnt_flags’ [-Werror=implicit-function-declaration]
+  985 |                 rkp_reset_mnt_flags(ufs->upper_mnt, (MNT_NOATIME | MNT_NODIRATIME | MNT_RELATIME));
+      |                 ^~~~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/fs/overlayfs/super.c:1062:9: error: implicit declaration of function ‘rkp_set_mnt_flags’ [-Werror=implicit-function-declaration]
+ 1062 |         rkp_set_mnt_flags(mnt,MNT_READONLY|MNT_NOATIME);
+      |         ^~~~~~~~~~~~~~~~~
+cc1: some warnings being treated as errors
+make[3]: *** [/workspace/samsung-exynos9820/scripts/Makefile.build:356: fs/overlayfs/super.o] Error 1
+make[2]: *** [/workspace/samsung-exynos9820/scripts/Makefile.build:671: fs/overlayfs] Error 2
+make[2]: *** Waiting for unfinished jobs....
+make[1]: *** [/workspace/samsung-exynos9820/Makefile:1257: fs] Error 2
+make[1]: *** Waiting for unfinished jobs....
+/workspace/samsung-exynos9820/drivers/kperfmon/Makefile:22: "kperfmon: perflog.h file is missing."
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-uevent.c:27:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm.c:8:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-table.c:8:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-target.c:7:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-linear.c:7:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-stripe.c:7:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-ioctl.c:8:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-io.c:8:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-kcopyd.c:29:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-kcopyd.c:26:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-sysfs.c:9:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-stats.c:14:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-stats.c:12:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-rq.c:7:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-core.h:18,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-builtin.c:2:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/fimc-is2/fimc-is-debug.c:903:6: warning: conflicting types for ‘fimc_is_debug_event_print’ due to enum/integer mismatch; have ‘void(fimc_is_event_store_type_t,  void (*)(void *), void *, size_t,  const char *, ...)’ {aka ‘void(enum fimc_is_event_store_type,  void (*)(void *), void *, long unsigned int,  const char *, ...)’} [-Wenum-int-mismatch]
+  903 | void fimc_is_debug_event_print(fimc_is_event_store_type_t event_store_type,
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/media/platform/exynos/fimc-is2/fimc-is-debug.c:17:
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/fimc-is2/fimc-is-debug.h:139:6: note: previous declaration of ‘fimc_is_debug_event_print’ with type ‘void(u32,  void (*)(void *), void *, size_t,  const char *, ...)’ {aka ‘void(unsigned int,  void (*)(void *), void *, long unsigned int,  const char *, ...)’}
+  139 | void fimc_is_debug_event_print(u32 event_type, void (*callfunc)(void *), void *ptrdata, size_t datasize, const char *fmt, ...);
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/fimc-is2/fimc-is-debug.c:971:6: warning: conflicting types for ‘fimc_is_debug_event_count’ due to enum/integer mismatch; have ‘void(fimc_is_event_store_type_t)’ {aka ‘void(enum fimc_is_event_store_type)’} [-Wenum-int-mismatch]
+  971 | void fimc_is_debug_event_count(fimc_is_event_store_type_t event_store_type)
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/fimc-is2/fimc-is-debug.h:143:6: note: previous declaration of ‘fimc_is_debug_event_count’ with type ‘void(u32)’ {aka ‘void(unsigned int)’}
+  143 | void fimc_is_debug_event_count(u32 event_type);
+      |      ^~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-verity-fec.h:15,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-verity-fec.c:12:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm.h:14:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-verity-fec.h:15,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-verity-target.c:18:
+/workspace/samsung-exynos9820/drivers/md/dm.h:67:20: warning: conflicting types for ‘dm_table_get_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct dm_table *)’ [-Wenum-int-mismatch]
+   67 | enum dm_queue_mode dm_table_get_type(struct dm_table *t);
+      |                    ^~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/md/dm-verity.h:16,
+                 from /workspace/samsung-exynos9820/drivers/md/dm-verity-target.c:17:
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:473:10: note: previous declaration of ‘dm_table_get_type’ with type ‘unsigned int(struct dm_table *)’
+  473 | unsigned dm_table_get_type(struct dm_table *t);
+      |          ^~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:79:6: warning: conflicting types for ‘dm_set_md_type’ due to enum/integer mismatch; have ‘void(struct mapped_device *, enum dm_queue_mode)’ [-Wenum-int-mismatch]
+   79 | void dm_set_md_type(struct mapped_device *md, enum dm_queue_mode type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:470:6: note: previous declaration of ‘dm_set_md_type’ with type ‘void(struct mapped_device *, unsigned int)’
+  470 | void dm_set_md_type(struct mapped_device *md, unsigned type);
+      |      ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/md/dm.h:80:20: warning: conflicting types for ‘dm_get_md_type’ due to enum/integer mismatch; have ‘enum dm_queue_mode(struct mapped_device *)’ [-Wenum-int-mismatch]
+   80 | enum dm_queue_mode dm_get_md_type(struct mapped_device *md);
+      |                    ^~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/include/linux/device-mapper.h:471:10: note: previous declaration of ‘dm_get_md_type’ with type ‘unsigned int(struct mapped_device *)’
+  471 | unsigned dm_get_md_type(struct mapped_device *md);
+      |          ^~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/include/linux/printk.h:7,
+                 from /workspace/samsung-exynos9820/include/linux/kernel.h:14,
+                 from /workspace/samsung-exynos9820/include/asm-generic/bug.h:16,
+                 from /workspace/samsung-exynos9820/arch/arm64/include/asm/bug.h:37,
+                 from /workspace/samsung-exynos9820/include/linux/bug.h:5,
+                 from /workspace/samsung-exynos9820/include/linux/scatterlist.h:7,
+                 from /workspace/samsung-exynos9820/include/linux/iommu.h:22,
+                 from /workspace/samsung-exynos9820/include/linux/exynos_iovmm.h:15,
+                 from /workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_common.h:16,
+                 from /workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_utils.h:16,
+                 from /workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_utils.c:15:
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_utils.c: In function ‘mfc_update_real_time’:
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:5:25: warning: format ‘%d’ expects argument of type ‘int’, but argument 5 has type ‘long unsigned int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:15:25: note: in expansion of macro ‘KERN_SOH’
+   15 | #define KERN_DEBUG      KERN_SOH "7"    /* debug-level messages */
+      |                         ^~~~~~~~
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_debug.h:36:32: note: in expansion of macro ‘KERN_DEBUG’
+   36 |                         printk(KERN_DEBUG "%s:%d: " fmt,        \
+      |                                ^~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_utils.c:592:9: note: in expansion of macro ‘mfc_debug’
+  592 |         mfc_debug(2, "[PRIO] update real time: %d, operating frame rate: %d, prio: %d\n",
+      |         ^~~~~~~~~
+In file included from /workspace/samsung-exynos9820/include/linux/printk.h:7,
+                 from /workspace/samsung-exynos9820/include/linux/kernel.h:14,
+                 from /workspace/samsung-exynos9820/include/asm-generic/bug.h:16,
+                 from /workspace/samsung-exynos9820/arch/arm64/include/asm/bug.h:37,
+                 from /workspace/samsung-exynos9820/include/linux/bug.h:5,
+                 from /workspace/samsung-exynos9820/include/linux/io.h:23,
+                 from /workspace/samsung-exynos9820/include/soc/samsung/exynos-pd.h:18,
+                 from /workspace/samsung-exynos9820/include/soc/samsung/bts.h:14,
+                 from /workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_qos.c:15:
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_qos.c: In function ‘mfc_qos_update_framerate’:
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:5:25: warning: format ‘%ld’ expects argument of type ‘long int’, but argument 4 has type ‘int’ [-Wformat=]
+    5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
+      |                         ^~~~~~
+/workspace/samsung-exynos9820/include/linux/kern_levels.h:15:25: note: in expansion of macro ‘KERN_SOH’
+   15 | #define KERN_DEBUG      KERN_SOH "7"    /* debug-level messages */
+      |                         ^~~~~~~~
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_debug.h:36:32: note: in expansion of macro ‘KERN_DEBUG’
+   36 |                         printk(KERN_DEBUG "%s:%d: " fmt,        \
+      |                                ^~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/mfc/mfc_qos.c:1069:25: note: in expansion of macro ‘mfc_debug’
+ 1069 |                         mfc_debug(2, "[QoS] max operating fps %ld\n", DEC_DEFAULT_FPS);
+      |                         ^~~~~~~~~
+/workspace/samsung-exynos9820/drivers/samsung/debug/sec_debug_reset_reason.c: In function ‘secdbg_rere_get_rstcnt_from_cmdline’:
+/workspace/samsung-exynos9820/drivers/samsung/debug/sec_debug_reset_reason.c:151:9: warning: ignoring return value of ‘kstrtol’ declared with attribute ‘warn_unused_result’ [-Wunused-result]
+  151 |         kstrtol(pwrsrc_rs, 16, &long_pwrsrc_rs);
+      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/soc/samsung/acpm/acpm.c: In function ‘acpm_probe’:
+/workspace/samsung-exynos9820/drivers/soc/samsung/acpm/acpm.c:375:9: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]
+  375 |         if (IS_ERR(acpm->timer_base))
+      |         ^~
+/workspace/samsung-exynos9820/drivers/soc/samsung/acpm/acpm.c:378:17: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’
+  378 |                 if (of_property_read_u32(node, "peritimer-cnt", &acpm->timer_cnt))
+      |                 ^~
+/workspace/samsung-exynos9820/drivers/scsi/ufs/ufshcd.c: In function ‘ufs_sec_send_errinfo’:
+/workspace/samsung-exynos9820/drivers/scsi/ufs/ufshcd.c:10135:13: warning: the comparison will always evaluate as ‘true’ for the address of ‘SEC_err_info’ will never be NULL [-Waddress]
+10135 |         if (&(hba->SEC_err_info)) {
+      |             ^
+In file included from /workspace/samsung-exynos9820/drivers/scsi/ufs/ufshcd.c:50:
+/workspace/samsung-exynos9820/drivers/scsi/ufs/ufshcd.h:883:33: note: ‘SEC_err_info’ declared here
+  883 |         struct SEC_UFS_counting SEC_err_info;
+      |                                 ^~~~~~~~~~~~
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/fimc-is2/sensor/module_framework/fimc-is-control-actuator.c:78:5: warning: conflicting types for ‘fimc_is_actuator_ctl_search_position’ due to enum/integer mismatch; have ‘int(u32,  u32 *, enum fimc_is_actuator_direction,  u32 *)’ {aka ‘int(unsigned int,  unsigned int *, enum fimc_is_actuator_direction,  unsigned int *)’} [-Wenum-int-mismatch]
+   78 | int fimc_is_actuator_ctl_search_position(u32 position,
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /workspace/samsung-exynos9820/drivers/media/platform/exynos/fimc-is2/sensor/module_framework/fimc-is-control-actuator.c:16:
+/workspace/samsung-exynos9820/drivers/media/platform/exynos/fimc-is2/sensor/module_framework/fimc-is-control-sensor.h:52:5: note: previous declaration of ‘fimc_is_actuator_ctl_search_position’ with type ‘int(u32,  u32 *, u32,  u32 *)’ {aka ‘int(unsigned int,  unsigned int *, unsigned int,  unsigned int *)’}
+   52 | int fimc_is_actuator_ctl_search_position(u32 position,
+      |     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+make: *** [Makefile:146: sub-make] Error 2

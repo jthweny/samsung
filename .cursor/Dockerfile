@@ -33,8 +33,21 @@ RUN apt-get update -qq && \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# Create a non-root user and set up home directory
+ARG USERNAME=user
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+RUN groupadd --gid $USER_GID $USERNAME && \
+    useradd --uid $USER_UID --gid $USER_GID --create-home --shell /bin/bash $USERNAME && \
+    mkdir -p /home/$USERNAME/workspace && \
+    chown -R $USERNAME:$USERNAME /home/$USERNAME
+
+# Set the user
+USER $USERNAME
+
 # Set a basic working directory
-WORKDIR /home/user/workspace
+WORKDIR /home/$USERNAME/workspace
 
 # A simple entrypoint
 CMD ["/bin/bash"] 

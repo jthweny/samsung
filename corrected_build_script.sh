@@ -623,6 +623,7 @@ cp "/workspace/kernelsu_compat_stubs.c" "$STUBS_DIR/kernelsu_compat_stubs.c" || 
 #include <linux/uaccess.h>
 #include <linux/cred.h>
 #include <linux/rcupdate.h>
+#include <linux/module.h>
 
 /* Forward declarations */
 struct inode;

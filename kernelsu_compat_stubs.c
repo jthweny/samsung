@@ -15,6 +15,7 @@
 #include <linux/uaccess.h>
 #include <linux/cred.h>
 #include <linux/rcupdate.h>
+#include <linux/module.h>
 
 /* Forward declarations */
 struct inode;

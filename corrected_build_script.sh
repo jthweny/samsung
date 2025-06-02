@@ -338,6 +338,7 @@ echo "CONFIG_MALI_EXYNOS_TRACE=n" >> "$OUT_DIR/.config"
 echo "CONFIG_MALI_SEC_CL_BOOST=y" >> "$OUT_DIR/.config"
 echo "CONFIG_MALI_PM_QOS=y" >> "$OUT_DIR/.config"
 echo "CONFIG_MALI_SEC_VK_BOOST=n" >> "$OUT_DIR/.config"
+echo "# CONFIG_MALI_SEC_JOB_STATUS_CHECK is not set" >> "$OUT_DIR/.config"
 
 # Add dummy define for CONFIG_OPTION_REGION if not present in modem_main.c
 MODEM_MAIN_C_PATH="$KERNEL_DIR/drivers/misc/modem_v1/modem_main.c"

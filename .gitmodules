@@ -1,0 +1,6 @@
+[submodule "KernelSU"]
+	path = KernelSU
+	url = https://github.com/tiann/KernelSU.git
+[submodule "samsung-exynos9820"]
+	path = samsung-exynos9820
+	url = https://github.com/jthweny/Samsung-Exynos-9820-kernel.git

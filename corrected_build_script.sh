@@ -138,6 +138,37 @@ fi
 info "Patching SELinux classmap.h maximum check..."
 sed -i 's/#if PF_MAX > 44/#if PF_MAX > 46/' "$KERNEL_DIR/security/selinux/include/classmap.h"
 
+# Patch vision-dev.c to find vision-config.h
+VISION_DEV_C_PATH="$KERNEL_DIR/drivers/vision/vision-core/vision-dev.c"
+if [ -f "$VISION_DEV_C_PATH" ]; then
+    if grep -q '#include "vision-config.h"' "$VISION_DEV_C_PATH"; then
+        info "Patching include path in $VISION_DEV_C_PATH for vision-config.h"
+        sed -i 's|#include "vision-config.h"|#include "../include/vision-config.h"|' "$VISION_DEV_C_PATH"
+    fi
+fi
+
+# --- Apply Samsung HAL compatibility patches ---
+info "Applying Samsung HAL compatibility patches..."
+
+# Apply Device Mapper enum conflict patch
+DM_HEADER_PATH="$KERNEL_DIR/drivers/md/dm.h"
+if [ -f "$DM_HEADER_PATH" ]; then
+    info "Applying Device Mapper enum conflict patch..."
+    sed -i 's/enum dm_queue_mode/unsigned int/g' "$DM_HEADER_PATH"
+    info "Device Mapper enum conflicts patched"
+fi
+
+# Apply UFS driver pointer comparison patch
+UFS_DRIVER_PATH="$KERNEL_DIR/drivers/scsi/ufs/ufshcd.c"
+if [ -f "$UFS_DRIVER_PATH" ]; then
+    info "Applying UFS driver pointer comparison patch..."
+    # First check if SEC_err_info has a valid member, if not add a safer check
+    if grep -q "if (&(hba->SEC_err_info))" "$UFS_DRIVER_PATH"; then
+        sed -i 's/if (&(hba->SEC_err_info))/if (hba \&\& hba->SEC_err_info.count_host_reset >= 0)/g' "$UFS_DRIVER_PATH"
+        info "UFS driver pointer comparison patched"
+    fi
+fi
+
 if [ "$USE_PROTON_CLANG" = true ]; then
     export CROSS_COMPILE="aarch64-linux-gnu-"
     export CC="$TOOLCHAIN_DIR/bin/clang"

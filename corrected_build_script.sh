@@ -162,9 +162,9 @@ fi
 UFS_DRIVER_PATH="$KERNEL_DIR/drivers/scsi/ufs/ufshcd.c"
 if [ -f "$UFS_DRIVER_PATH" ]; then
     info "Applying UFS driver pointer comparison patch..."
-    # First check if SEC_err_info has a valid member, if not add a safer check
-    if grep -q "if (&(hba->SEC_err_info))" "$UFS_DRIVER_PATH"; then
-        sed -i 's/if (&(hba->SEC_err_info))/if (hba \&\& hba->SEC_err_info.op_count.HW_RESET_count >= 0)/g' "$UFS_DRIVER_PATH"
+    # Replace the invalid struct member check with a valid one
+    if grep -q "if (hba && hba->SEC_err_info.count_host_reset >= 0)" "$UFS_DRIVER_PATH"; then
+        sed -i 's/if (hba && hba->SEC_err_info.count_host_reset >= 0)/if (hba)/g' "$UFS_DRIVER_PATH"
         info "UFS driver pointer comparison patched"
     fi
 fi

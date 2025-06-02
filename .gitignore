@@ -1,9 +1,10 @@
-# Build output directory
+# Build output
 out/
+build_output/
 *.o
 *.ko
 *.cmd
-*.mod.c
+*.mod*
 *.symvers
 Module.symvers
 modules.order
@@ -18,11 +19,27 @@ dtbo.img
 boot.img
 boot.tar.md5
 *.zip
+*.patch
+*.log
 
 # Temporary files
 *.tmp
 *~
 *.swp
+*.bak
+
+# IDE/Editor specific
+.vscode/
+.idea/
+*.DS_Store
+# .cursor/ # We want to commit .cursor/environment.json and .cursor/Dockerfile
+
+# KernelSU specific (if any build artifacts are in its source dir)
+KernelSU/out/
+KernelSU/*.o
+
+# Patch backup files
+*.orig
 
 # Toolchains (if you accidentally put one inside the project dir)
 # proton-clang/
@@ -32,8 +49,3 @@ boot.tar.md5
 *.tar.gz
 *.tar.xz
 *.zip
-
-# IDE/Editor specific
-.vscode/
-.idea/
-*.DS_Store

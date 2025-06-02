@@ -455,6 +455,36 @@ else
     info "KernelSU ksu.c not found - skipping compatibility patch"
 fi
 
+# Apply C99 compatibility patch for sucompat.c
+if [ -f "$KERNEL_DIR/drivers/kernelsu/sucompat.c" ]; then
+    # Fix C99 for loop initial declaration for C89/C90 compatibility
+    if grep -q "for (int i = 0; i < ARRAY_SIZE(su_kps); i++)" "$KERNEL_DIR/drivers/kernelsu/sucompat.c"; then
+        info "Applying C99 compatibility patch for sucompat.c"
+        sed -i 's/for (int i = 0; i < ARRAY_SIZE(su_kps); i++) {/{ int i; for (i = 0; i < ARRAY_SIZE(su_kps); i++) {/' "$KERNEL_DIR/drivers/kernelsu/sucompat.c"
+        # Add missing closing brace for the variable declaration block
+        sed -i '285a\        }' "$KERNEL_DIR/drivers/kernelsu/sucompat.c"
+        info "C99 compatibility patch applied"
+    else
+        info "C99 compatibility patch already applied or not needed"
+    fi
+else
+    info "KernelSU sucompat.c not found - skipping C99 compatibility patch"
+fi
+
+# Disable KernelSU SELinux module for kernel 4.14.x compatibility
+if [ -f "$KERNEL_DIR/drivers/kernelsu/Makefile" ]; then
+    # Comment out SELinux object files to avoid API compatibility issues
+    if grep -q "kernelsu-objs.*selinux" "$KERNEL_DIR/drivers/kernelsu/Makefile"; then
+        info "Disabling KernelSU SELinux module for kernel 4.14.x compatibility"
+        sed -i 's/kernelsu-objs.*selinux/#&/' "$KERNEL_DIR/drivers/kernelsu/Makefile"
+        info "KernelSU SELinux module disabled - core functionality preserved"
+    else
+        info "KernelSU SELinux module already disabled or not present"
+    fi
+else
+    info "KernelSU Makefile not found - skipping SELinux disable patch"
+fi
+
 info "KernelSU integration complete - ready for compilation"
 
 # --- Apply patches ---

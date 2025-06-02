@@ -401,6 +401,15 @@ if [ ! -f "$FIRMWARE_TSP_BIN" ]; then
     touch "$FIRMWARE_TSP_BIN"
 fi
 
+# Also create TSP firmware in build_output directory (where build system expects it)
+FIRMWARE_TSP_DIR_OUT="$OUT_DIR/firmware/tsp_sec"
+FIRMWARE_TSP_BIN_OUT="$FIRMWARE_TSP_DIR_OUT/y771_d1.bin"
+if [ ! -f "$FIRMWARE_TSP_BIN_OUT" ]; then
+    info "Creating dummy y771_d1.bin TSP firmware in build_output at $FIRMWARE_TSP_BIN_OUT"
+    mkdir -p "$FIRMWARE_TSP_DIR_OUT"
+    touch "$FIRMWARE_TSP_BIN_OUT"
+fi
+
 # Create dummy y771_d2.bin TSP firmware
 FIRMWARE_TSP_D2_BIN="$FIRMWARE_TSP_DIR/y771_d2.bin"
 if [ ! -f "$FIRMWARE_TSP_D2_BIN" ]; then
@@ -409,11 +418,25 @@ if [ ! -f "$FIRMWARE_TSP_D2_BIN" ]; then
     touch "$FIRMWARE_TSP_D2_BIN"
 fi
 
+# Also create y771_d2.bin in build_output directory
+FIRMWARE_TSP_D2_BIN_OUT="$FIRMWARE_TSP_DIR_OUT/y771_d2.bin"
+if [ ! -f "$FIRMWARE_TSP_D2_BIN_OUT" ]; then
+    info "Creating dummy y771_d2.bin TSP firmware in build_output at $FIRMWARE_TSP_D2_BIN_OUT"
+    touch "$FIRMWARE_TSP_D2_BIN_OUT"
+fi
+
 # Create dummy y771_d1_bringup.bin TSP firmware
 FIRMWARE_TSP_D1_BRINGUP_BIN="$FIRMWARE_TSP_DIR/y771_d1_bringup.bin"
 if [ ! -f "$FIRMWARE_TSP_D1_BRINGUP_BIN" ]; then
     info "Creating dummy y771_d1_bringup.bin TSP firmware at $FIRMWARE_TSP_D1_BRINGUP_BIN"
     touch "$FIRMWARE_TSP_D1_BRINGUP_BIN"
+fi
+
+# Also create y771_d1_bringup.bin in build_output directory
+FIRMWARE_TSP_D1_BRINGUP_BIN_OUT="$FIRMWARE_TSP_DIR_OUT/y771_d1_bringup.bin"
+if [ ! -f "$FIRMWARE_TSP_D1_BRINGUP_BIN_OUT" ]; then
+    info "Creating dummy y771_d1_bringup.bin TSP firmware in build_output at $FIRMWARE_TSP_D1_BRINGUP_BIN_OUT"
+    touch "$FIRMWARE_TSP_D1_BRINGUP_BIN_OUT"
 fi
 
 # --- PHASE 2: KernelSU Integration ---

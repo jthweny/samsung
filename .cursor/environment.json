@@ -6,21 +6,19 @@
     "dockerfilePath": ".cursor/Dockerfile"
   },
   "github": {
-    "repository": "https://github.com/jthweny/samsung.git"
+    "repository": "https://github.com/jthweny/samsung.git",
+    "autoClone": true,
+    "autoCommit": false,
+    "autoPush": false
   },
-  "onCreateCommand": "echo 'Minimal agent environment created. Attempting to initialize submodules.' && if [ -f .gitmodules ]; then git submodule update --init --recursive; else echo 'No .gitmodules file found.'; fi && echo 'Submodule init attempt complete.'",
-  "install": [
-    {
-      "name": "Verify Environment",
-      "command": "echo 'Verifying environment...'; echo 'PATH is: $PATH'; clang --version; aarch64-linux-gnu-gcc --version; dtc --version; python3 --version"
-    }
+  "onCreateCommand": [
+    "echo 'Running onCreateCommand...'",
+    "if [ -f /usr/bin/dtc ] && [ ! -f /usr/local/bin/dtc ]; then sudo ln -sf /usr/bin/dtc /usr/local/bin/dtc; fi",
+    "if [ -f .gitmodules ]; then git submodule update --init --recursive; fi",
+    "echo 'onCreateCommand finished.'"
   ],
-  "start": [
-    {
-      "name": "Idle",
-      "command": "echo 'Android Kernel Build Agent Ready. Waiting for master prompt.'; sleep infinity"
-    }
-  ],
+  "install": "echo 'Verifying environment...'; echo 'PATH is: $PATH'; clang --version; aarch64-linux-gnu-gcc --version; dtc --version; python3 --version",
+  "start": "echo 'Android Kernel Build Agent Ready. Waiting for master prompt.'; sleep infinity",
   "terminals": [
     {
       "name": "Build Terminal",

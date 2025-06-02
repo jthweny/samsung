@@ -3,7 +3,15 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # 1. Install Core Build Tools, Python, and other utilities
-RUN apt-get update && apt-get install -y --no-install-recommends \\
+# Test network connectivity and install build dependencies
+RUN echo "INFO: Testing network connectivity..." && \
+    apt-get update -qq && \
+    apt-get install -y --no-install-recommends iputils-ping dnsutils && \
+    ping -c 3 8.8.8.8 && \
+    nslookup github.com && \
+    echo "INFO: Network test complete. Proceeding with main package installation." && \
+    # apt-get update -qq && # Update was already run for ping/dnsutils
+    apt-get install -y --no-install-recommends \\
     build-essential \\
     git \\
     bc \\
@@ -23,11 +31,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \\
     python3 \\
     python3-pip \\
     device-tree-compiler \\
-    # For aarch64-linux-gnu-gcc if Proton Clang fails or for specific host tools
     gcc-aarch64-linux-gnu \\
     g++-aarch64-linux-gnu \\
-    # Add any other utilities you find necessary
-    && rm -rf /var/lib/apt/lists/*
+    kmod \\
+    imagemagick \\
+    zip \\
+ && apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # 2. Setup User (Cursor agent often runs as a non-root user like 'user' or 'codespace')
 # Using 'user' as an example. UID/GID 1000 is common.

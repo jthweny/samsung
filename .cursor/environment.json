@@ -11,12 +11,7 @@
     "autoCommit": false,
     "autoPush": false
   },
-  "onCreateCommand": [
-    "echo 'Running onCreateCommand...'",
-    "if [ -f /usr/bin/dtc ] && [ ! -f /usr/local/bin/dtc ]; then sudo ln -sf /usr/bin/dtc /usr/local/bin/dtc; fi",
-    "if [ -f .gitmodules ]; then git submodule update --init --recursive; fi",
-    "echo 'onCreateCommand finished.'"
-  ],
+  "onCreateCommand": "if [ -f .gitmodules ]; then git submodule update --init --recursive; fi && echo 'Submodules initialized.' && if [ -f KernelSU/kernel/requirements.txt ]; then pip3 install --user -r KernelSU/kernel/requirements.txt; fi && echo 'onCreateCommand finished.'",
   "install": [
     {
       "name": "Verify Environment",

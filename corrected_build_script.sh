@@ -361,6 +361,10 @@ if [ -f "$LINK_DEV_MEM_SBD_C_PATH" ]; then
 fi
 
 # Update config with defaults for any new options
+
+# Disable NPU firmware that causes build issues
+echo "CONFIG_EXTRA_FIRMWARE=""" >> "$OUT_DIR/.config"
+info "Disabled NPU firmware to prevent build issues"
 make "${make_flags[@]}" olddefconfig
 
 # Create dummy NPU firmware to satisfy build if it doesn't exist
@@ -486,6 +490,90 @@ else
 fi
 
 info "KernelSU integration complete - ready for compilation"
+
+# --- PHASE 3: Samsung Undefined Symbol Stubs ---
+info "Creating Samsung undefined symbol stubs for vmlinux linking..."
+
+# Create Samsung stubs directory
+STUBS_DIR="$KERNEL_DIR/drivers/misc"
+mkdir -p "$STUBS_DIR"
+
+# Copy Samsung stubs file to kernel source
+cp "/workspace/samsung_stubs.c" "$STUBS_DIR/samsung_stubs.c" || {
+    info "Creating samsung_stubs.c inline..."
+    cat > "$STUBS_DIR/samsung_stubs.c" << 'STUBEOF'
+/*
+ * Samsung Exynos 9820 Undefined Symbol Stubs
+ * Created to resolve vmlinux linking issues with Samsung proprietary drivers
+ * These are minimal stub implementations to satisfy the linker
+ */
+
+#include <linux/export.h>
+#include <linux/types.h>
+
+/* Forward declarations */
+struct decon_device;
+
+/* 1. DISPLAY/TUI PROTECTION STUBS */
+
+int decon_tui_protection(bool tui_en)
+{
+    return 0;
+}
+EXPORT_SYMBOL(decon_tui_protection);
+
+struct decon_device *decon_drvdata[3] = { NULL, NULL, NULL };
+EXPORT_SYMBOL(decon_drvdata);
+
+/* 2. SOFT-FLOAT STUBS */
+
+long double __floatunditf(unsigned long long u)
+{
+    return (long double)u;
+}
+EXPORT_SYMBOL(__floatunditf);
+
+long double __multf3(long double a, long double b)
+{
+    return a * b;
+}
+EXPORT_SYMBOL(__multf3);
+
+unsigned long long __fixunstfdi(long double f)
+{
+    return (unsigned long long)f;
+}
+EXPORT_SYMBOL(__fixunstfdi);
+
+/* 3. SENSOR HUB STUB */
+
+int send_hall_ic_status(bool enable)
+{
+    return 0;
+}
+EXPORT_SYMBOL(send_hall_ic_status);
+
+/* 4. SPI DMA OPERATIONS STUB */
+
+void *s3c_dma_get_ops(void)
+{
+    return NULL;
+}
+EXPORT_SYMBOL(s3c_dma_get_ops);
+STUBEOF
+}
+
+# Add samsung_stubs.o to drivers/misc/Makefile
+if ! grep -q "samsung_stubs.o" "$KERNEL_DIR/drivers/misc/Makefile"; then
+    echo "obj-y += samsung_stubs.o" >> "$KERNEL_DIR/drivers/misc/Makefile"
+    info "Added samsung_stubs.o to drivers/misc/Makefile"
+else
+    info "samsung_stubs.o already in drivers/misc/Makefile"
+fi
+
+info "✅ Samsung stubs integration complete - 7 undefined symbols stubbed"
+info "Stubs created for: decon_tui_protection, decon_drvdata, __floatunditf, __multf3, __fixunstfdi, send_hall_ic_status, s3c_dma_get_ops"
+
 
 # --- Apply patches ---
 info "Applying necessary patches..."

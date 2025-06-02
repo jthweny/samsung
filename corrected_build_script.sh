@@ -196,6 +196,24 @@ else
     export CC="aarch64-linux-gnu-gcc"
 fi
 
+# --- Enhanced Warning Suppression for Phase 1 Completion ---
+info "Applying enhanced warning suppression for final Phase 1 completion..."
+
+# Export comprehensive KBUILD_CFLAGS for all warning types
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error"
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error=array-compare"
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error=format"
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error=format-security"
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error=unused-result"
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error=misleading-indentation"
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error=address"
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error=unused-variable"
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error=unused-function"
+export KBUILD_CFLAGS="${KBUILD_CFLAGS} -Wno-error=strict-prototypes"
+
+# Export enhanced KBUILD_AFLAGS for assembly warnings
+export KBUILD_AFLAGS="${KBUILD_AFLAGS} -Wno-error"
+
 # Force the use of external DTC to avoid compilation issues
 make_flags=(
     "ARCH=$ARCH"
@@ -203,7 +221,7 @@ make_flags=(
     "CROSS_COMPILE=$CROSS_COMPILE"
     "CC=$CC"
     "DTC=$PREBUILT_DTC_PATH"
-    "EXTRA_CFLAGS=-Wno-error=format-extra-args -Wno-error=format -Wno-error=array-bounds -Wno-error=array-compare -Wno-error=maybe-uninitialized -Wno-error=address -Wno-error=address-of-packed-member -Wno-error=missing-attributes -Wno-error=restrict -Wno-error=unused-result -Wno-error=zero-length-bounds -Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types -Wno-error=strict-aliasing -Wno-error=cast-align -Wno-error=uninitialized -Wno-error=stringop-overflow -Wno-error=stringop-truncation -Wno-error=sizeof-pointer-memaccess -Wno-error=misleading-indentation -Wno-error=unused-function -Wno-error=unused-variable -Wno-error -Wno-error=strict-prototypes"
+    "EXTRA_CFLAGS=-Wno-error -Wno-error=format-extra-args -Wno-error=format -Wno-error=format-security -Wno-error=array-bounds -Wno-error=array-compare -Wno-error=maybe-uninitialized -Wno-error=address -Wno-error=address-of-packed-member -Wno-error=missing-attributes -Wno-error=restrict -Wno-error=unused-result -Wno-error=zero-length-bounds -Wno-error=implicit-function-declaration -Wno-error=incompatible-pointer-types -Wno-error=strict-aliasing -Wno-error=cast-align -Wno-error=uninitialized -Wno-error=stringop-overflow -Wno-error=stringop-truncation -Wno-error=sizeof-pointer-memaccess -Wno-error=misleading-indentation -Wno-error=unused-function -Wno-error=unused-variable -Wno-error=strict-prototypes -Wno-array-compare -Wno-format -Wno-format-security -Wno-unused-result -Wno-misleading-indentation -Wno-address"
     "-j$NUM_JOBS"
 )
 

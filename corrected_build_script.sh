@@ -9,7 +9,7 @@ set -e
 KERNEL_DIR="/workspace/samsung-exynos9820"
 OUT_DIR="/workspace/build_output"
 TOOLCHAIN_DIR="/opt/proton-clang"
-PREBUILT_DTC_PATH="/usr/local/bin/dtc"
+PREBUILT_DTC_PATH="/usr/bin/dtc"
 
 # Kernel configuration
 DEFCONFIG="exynos9820-d1_defconfig"

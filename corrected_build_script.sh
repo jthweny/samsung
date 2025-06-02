@@ -362,9 +362,25 @@ fi
 
 # Update config with defaults for any new options
 
-# Disable NPU firmware that causes build issues
-echo "CONFIG_EXTRA_FIRMWARE=""" >> "$OUT_DIR/.config"
-info "Disabled NPU firmware to prevent build issues"
+# Robust NPU firmware disable to prevent build issues
+info "Applying NPU firmware disable to .config..."
+
+# Remove any existing CONFIG_EXTRA_FIRMWARE line related to NPU
+sed -i '/CONFIG_EXTRA_FIRMWARE="npu\/NPU.bin"/d' "$OUT_DIR/.config"
+
+# Ensure the general CONFIG_EXTRA_FIRMWARE is set to empty or remove it
+# If it must exist and be empty:
+if grep -q 'CONFIG_EXTRA_FIRMWARE=' "$OUT_DIR/.config"; then
+    sed -i 's/CONFIG_EXTRA_FIRMWARE=.*/CONFIG_EXTRA_FIRMWARE=""/' "$OUT_DIR/.config"
+else
+    echo 'CONFIG_EXTRA_FIRMWARE=""' >> "$OUT_DIR/.config"
+fi
+
+# Also remove CONFIG_EXTRA_FIRMWARE_DIR if it's problematic with an empty firmware list
+sed -i '/CONFIG_EXTRA_FIRMWARE_DIR/d' "$OUT_DIR/.config"
+
+info "NPU firmware requirement disabled in .config."
+
 make "${make_flags[@]}" olddefconfig
 
 # Create dummy NPU firmware to satisfy build if it doesn't exist

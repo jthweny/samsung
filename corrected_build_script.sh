@@ -396,47 +396,51 @@ if [ ! -f "$FIRMWARE_TSP_D1_BRINGUP_BIN" ]; then
     touch "$FIRMWARE_TSP_D1_BRINGUP_BIN"
 fi
 
-# --- TEMPORARILY DISABLED: KernelSU Integration ---
-# info "Integrating KernelSU..."
-# KERNELSU_SRC_PATH="$KERNEL_DIR/$KERNELSU_SOURCE_SUBDIR"
+# --- PHASE 2: KernelSU Integration ---
+info "Integrating KernelSU (Phase 2)..."
 
-# if [ ! -d "$KERNELSU_SRC_PATH" ]; then
-#     info "Cloning KernelSU repository..."
-#     git clone --depth=1 "$KERNELSU_REPO_URL" "$KERNELSU_SRC_PATH"
-# else
-#     info "Updating KernelSU..."
-#     cd "$KERNELSU_SRC_PATH"
-#     git fetch --depth=1 origin main
-#     git reset --hard origin/main
-#     cd "$KERNEL_DIR"
-# fi
+# Update git submodules to ensure KernelSU is current
+info "Updating KernelSU submodule..."
+cd "$KERNEL_DIR/.."
+git submodule update --init --recursive KernelSU 2>/dev/null || info "KernelSU submodule already up to date"
+cd "$KERNEL_DIR"
 
-# # Create symlink for KernelSU in drivers
-# info "Creating KernelSU symlink..."
-# mkdir -p "$KERNEL_DIR/drivers"
-# if [ -L "$KERNEL_DIR/drivers/kernelsu" ]; then
-#     rm -f "$KERNEL_DIR/drivers/kernelsu"
-# fi
-# ln -sf "../$KERNELSU_SOURCE_SUBDIR/kernel" "$KERNEL_DIR/drivers/kernelsu"
+# Create symlink for KernelSU in drivers (if not already exists)
+info "Setting up KernelSU symlink..."
+mkdir -p "$KERNEL_DIR/drivers"
+if [ ! -L "$KERNEL_DIR/drivers/kernelsu" ]; then
+    ln -sf "../../KernelSU/kernel" "$KERNEL_DIR/drivers/kernelsu"
+    info "Created KernelSU symlink: drivers/kernelsu -> ../../KernelSU/kernel"
+else
+    info "KernelSU symlink already exists"
+fi
 
-# # Add KernelSU to drivers Makefile
-# if ! grep -q "CONFIG_KSU" "$KERNEL_DIR/drivers/Makefile"; then
-#     echo 'obj-$(CONFIG_KSU) += kernelsu/' >> "$KERNEL_DIR/drivers/Makefile"
-#     info "Added KernelSU to drivers/Makefile"
-# fi
+# Add KernelSU to drivers Makefile (if not already added)
+if ! grep -q "CONFIG_KSU" "$KERNEL_DIR/drivers/Makefile"; then
+    echo 'obj-$(CONFIG_KSU) += kernelsu/' >> "$KERNEL_DIR/drivers/Makefile"
+    info "Added KernelSU to drivers/Makefile"
+else
+    info "KernelSU already in drivers/Makefile"
+fi
 
-# # Add KernelSU to drivers Kconfig
-# if ! grep -q 'source "drivers/kernelsu/Kconfig"' "$KERNEL_DIR/drivers/Kconfig"; then
-#     # Find endmenu and insert before it
-#     if grep -q "^endmenu" "$KERNEL_DIR/drivers/Kconfig"; then
-#         sed -i '/^endmenu/i source "drivers/kernelsu/Kconfig"' "$KERNEL_DIR/drivers/Kconfig"
-#     else
-#         echo 'source "drivers/kernelsu/Kconfig"' >> "$KERNEL_DIR/drivers/Kconfig"
-#     fi
-#     info "Added KernelSU to drivers/Kconfig"
-# fi
+# Add KernelSU to drivers Kconfig (if not already added)
+if ! grep -q 'source "drivers/kernelsu/Kconfig"' "$KERNEL_DIR/drivers/Kconfig"; then
+    echo 'source "drivers/kernelsu/Kconfig"' >> "$KERNEL_DIR/drivers/Kconfig"
+    info "Added KernelSU Kconfig source to drivers/Kconfig"
+else
+    info "KernelSU Kconfig already in drivers/Kconfig"
+fi
 
-info "KernelSU integration temporarily disabled for base kernel build"
+# Verify KernelSU integration
+info "Verifying KernelSU integration..."
+if [ -L "$KERNEL_DIR/drivers/kernelsu" ] && [ -f "$KERNEL_DIR/drivers/kernelsu/Kconfig" ] && [ -f "$KERNEL_DIR/drivers/kernelsu/Makefile" ]; then
+    info "✅ KernelSU integration successful: symlink, Kconfig, and Makefile ready"
+else
+    error "❌ KernelSU integration failed - missing components"
+    exit 1
+fi
+
+info "KernelSU integration complete - ready for compilation"
 
 # --- Apply patches ---
 info "Applying necessary patches..."

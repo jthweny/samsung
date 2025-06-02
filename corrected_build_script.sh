@@ -307,6 +307,9 @@ echo "# CONFIG_TUI is not set" >> "$OUT_DIR/.config"
 echo "# CONFIG_LEDS_S2MPB02 is not set" >> "$OUT_DIR/.config"
 echo "# CONFIG_UID_SYS_STATS is not set" >> "$OUT_DIR/.config"
 
+# Disable TCS3407 optical sensor that has PWM dependency issues  
+echo "# CONFIG_SENSORS_TCS3407 is not set" >> "$OUT_DIR/.config"
+
 # Add dummy define for CONFIG_OPTION_REGION if not present in modem_main.c
 MODEM_MAIN_C_PATH="$KERNEL_DIR/drivers/misc/modem_v1/modem_main.c"
 if [ -f "$MODEM_MAIN_C_PATH" ]; then

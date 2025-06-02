@@ -173,7 +173,7 @@ info "Configuring base kernel options..."
 # echo "CONFIG_KPROBES=y" >> "$OUT_DIR/.config"
 # echo "CONFIG_HAVE_KPROBES=y" >> "$OUT_DIR/.config"
 # echo "CONFIG_KPROBE_EVENTS=y" >> "$OUT_DIR/.config"
-echo "CONFIG_OVERLAY_FS=y" >> "$OUT_DIR/.config"
+echo "# CONFIG_OVERLAY_FS is not set" >> "$OUT_DIR/.config"
 echo "CONFIG_MODULE_SIG=n" >> "$OUT_DIR/.config"
 
 # Disable problematic TCP congestion control modules
@@ -242,6 +242,9 @@ echo "# CONFIG_FB_EXYNOS_DPU20 is not set" >> "$OUT_DIR/.config"
 echo "# CONFIG_EXYNOS_MIPI_DSIM is not set" >> "$OUT_DIR/.config"
 echo "# CONFIG_PANEL_SAMSUNG_LCD is not set" >> "$OUT_DIR/.config"
 echo "# CONFIG_FB_SAMSUNG is not set" >> "$OUT_DIR/.config"
+
+# Disable KPERFMON that has missing perflog.h
+echo "# CONFIG_KPERFMON is not set" >> "$OUT_DIR/.config"
 
 # Add dummy define for CONFIG_OPTION_REGION if not present in modem_main.c
 MODEM_MAIN_C_PATH="$KERNEL_DIR/drivers/misc/modem_v1/modem_main.c"

@@ -440,6 +440,25 @@ else
     exit 1
 fi
 
+# Apply KernelSU kernel 4.14.x compatibility patches
+info "Applying KernelSU compatibility patches for kernel 4.14.x..."
+if [ -f "$KERNEL_DIR/drivers/kernelsu/ksu.c" ]; then
+    # Add MODULE_IMPORT_NS macro definition for kernel 4.14.x compatibility
+    if ! grep -q "#ifndef MODULE_IMPORT_NS" "$KERNEL_DIR/drivers/kernelsu/ksu.c"; then
+        info "Adding MODULE_IMPORT_NS compatibility macro for kernel 4.14.x"
+        sed -i '1i\
+#ifndef MODULE_IMPORT_NS\
+#define MODULE_IMPORT_NS(ns)\
+#endif\
+' "$KERNEL_DIR/drivers/kernelsu/ksu.c"
+        info "MODULE_IMPORT_NS compatibility patch applied"
+    else
+        info "MODULE_IMPORT_NS compatibility patch already applied"
+    fi
+else
+    info "KernelSU ksu.c not found - skipping compatibility patch"
+fi
+
 info "KernelSU integration complete - ready for compilation"
 
 # --- Apply patches ---

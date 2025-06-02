@@ -6,7 +6,7 @@
     "dockerfilePath": ".cursor/Dockerfile"
   },
   "github": {
-    "repository": "YOUR_GITHUB_REPOSITORY_URL_HERE",
+    "repository": "https://github.com/jthweny/samsung.git",
     "autoClone": true,
     "autoCommit": false,
     "autoPush": false

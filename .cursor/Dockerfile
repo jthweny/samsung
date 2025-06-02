@@ -27,7 +27,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \\
     gcc-aarch64-linux-gnu \\
     g++-aarch64-linux-gnu \\
     # Add any other utilities you find necessary
- && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/*
 
 # 2. Setup User (Cursor agent often runs as a non-root user like 'user' or 'codespace')
 # Using 'user' as an example. UID/GID 1000 is common.

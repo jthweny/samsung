@@ -164,9 +164,26 @@ if [ -f "$UFS_DRIVER_PATH" ]; then
     info "Applying UFS driver pointer comparison patch..."
     # First check if SEC_err_info has a valid member, if not add a safer check
     if grep -q "if (&(hba->SEC_err_info))" "$UFS_DRIVER_PATH"; then
-        sed -i 's/if (&(hba->SEC_err_info))/if (hba \&\& hba->SEC_err_info.count_host_reset >= 0)/g' "$UFS_DRIVER_PATH"
+        sed -i 's/if (&(hba->SEC_err_info))/if (hba \&\& hba->SEC_err_info.op_count.HW_RESET_count >= 0)/g' "$UFS_DRIVER_PATH"
         info "UFS driver pointer comparison patched"
     fi
+fi
+
+# Apply Device Mapper implementation patches
+DM_CORE_PATH="$KERNEL_DIR/drivers/md/dm.c"
+if [ -f "$DM_CORE_PATH" ]; then
+    info "Applying Device Mapper core implementation patch..."
+    sed -i 's/enum dm_queue_mode dm_get_md_type/unsigned int dm_get_md_type/g' "$DM_CORE_PATH"
+    sed -i 's/void dm_set_md_type(struct mapped_device \*md, enum dm_queue_mode type)/void dm_set_md_type(struct mapped_device *md, unsigned int type)/g' "$DM_CORE_PATH"
+    sed -i 's/struct dm_md_mempools \*dm_alloc_md_mempools(struct mapped_device \*md, enum dm_queue_mode type,/struct dm_md_mempools *dm_alloc_md_mempools(struct mapped_device *md, unsigned int type,/g' "$DM_CORE_PATH"
+    info "Device Mapper core implementation patched"
+fi
+
+DM_TABLE_PATH="$KERNEL_DIR/drivers/md/dm-table.c"
+if [ -f "$DM_TABLE_PATH" ]; then
+    info "Applying Device Mapper table implementation patch..."
+    sed -i 's/enum dm_queue_mode dm_table_get_type/unsigned int dm_table_get_type/g' "$DM_TABLE_PATH"
+    info "Device Mapper table implementation patched"
 fi
 
 if [ "$USE_PROTON_CLANG" = true ]; then
